@@ -38,6 +38,13 @@ public class Astronaut : MonoBehaviour
         _y = y;
     }
 
+    public void SetAllPositionAstronaut(int x, int y, Vector3 position)
+    {
+        SetX(x);
+        SetY(y);
+        SetPosition(position);
+    }
+    
     public int GetX()
     {
         return _x;
