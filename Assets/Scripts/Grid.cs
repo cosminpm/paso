@@ -15,11 +15,12 @@ public class Grid : MonoBehaviour
     public List<GameObject> desertGameObjectList;
     public List<GameObject> poisonDesertGameObjectList;
     public List<GameObject> forestGameObjectList;
+    public List<GameObject> finalGameObjectList;
 
     private GameObject[,] _gridCell;
 
     private int[] _startingPosition;
-    private int[] _finishPosition;
+    private int[] _finalPosition;
 
     private HashSet<int[]> _desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
@@ -34,10 +35,10 @@ public class Grid : MonoBehaviour
     {
         Desert,
         DesertPoison,
-        Forest
+        Forest,
+        Final
     }
-
-
+    
     private GameObject GetRandomGridCell()
     {
         int randomRow = Random.Range(0, rows);
@@ -52,9 +53,11 @@ public class Grid : MonoBehaviour
 
     void Start()
     {
+        InstantiateDictionaryCellType();
         InstantiateGrid();
         InstantiateAstronaut();
     }
+
 
 
     private T GetRandomFromList<T>(List<T> objects)
@@ -94,20 +97,22 @@ public class Grid : MonoBehaviour
             return GetRandomFromList(desertGameObjectList);
         else if (cellType == CellType.DesertPoison)
             return GetRandomFromList(poisonDesertGameObjectList);
-
-        // TODO: It should never arrive here
         return null;
     }
 
-    void InstantiateGrid()
+    private void InstantiateDictionaryCellType()
     {
         _dictCellTypeListGameObjects = new Dictionary<CellType, List<GameObject>>()
         {
             {CellType.Desert, desertGameObjectList},
             {CellType.Forest, forestGameObjectList},
-            {CellType.DesertPoison, poisonDesertGameObjectList}
+            {CellType.DesertPoison, poisonDesertGameObjectList},
+            {CellType.Final, finalGameObjectList}
         };
+    }
 
+    void InstantiateGrid()
+    {
 
         _gridCell = new GameObject[rows, columns];
         Transform cube = cellPrefab.transform.Find("Cube");
@@ -142,6 +147,17 @@ public class Grid : MonoBehaviour
                 _gridCell[i, j] = parent;
             }
         }
+
+        CreateFinalCellPosition();
+    }
+
+    
+    private void CreateFinalCellPosition()
+    {
+        int[] pos = GetRandomFromSet(_desertArrIntHashSet);
+        _finalPosition = pos;
+        TransformIntoFinalCell(pos[0],pos[1]);
+        _desertArrIntHashSet.Remove(pos);
     }
 
 
@@ -170,17 +186,7 @@ public class Grid : MonoBehaviour
         return true;
     }
 
-    private bool IsPositionGoodDesert(int[] position)
-    {
-        if (_desertArrIntHashSet.Contains(position))
-        {
-            Debug.Log("Me he muerto");
-        }
-
-        return false;
-    }
-
-    private void MoveAstronaut()
+    private int[] GetPositionDesired()
     {
         // Check input 
         int[] positionDesired = {-5, -5};
@@ -195,40 +201,50 @@ public class Grid : MonoBehaviour
 
         else if (Input.GetKeyDown("left"))
             positionDesired = new[] {_astronautScript.GetX() - 1, _astronautScript.GetY()};
+        return positionDesired;
+    }
+
+
+    private bool DidPlayerFinishedWithDesiredPosition(int[] positionDesired)
+    {
+        if (_desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
+            return true;
+        return false;
+    }
+    
+    private void MoveAstronaut()
+    {
+        int [] positionDesired = GetPositionDesired();
 
         // Check if position is a position inside the grid
         if (IsPositionIsInsideGrid(positionDesired) &&
             !_poisonArrIntHashSet.Contains(positionDesired) &&
-            !_forestArrIntHashSet.Contains(positionDesired))
+            !_forestArrIntHashSet.Contains(positionDesired) &&
+            !(positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
+            || DidPlayerFinishedWithDesiredPosition(positionDesired)
+            )
         {
             GameObject parent = _gridCell[positionDesired[0], positionDesired[1]];
 
             _astronautScript.SetAllPositionAstronaut(positionDesired[0], positionDesired[1],
                 parent.GetComponent<Cell>().GetPosition());
-
             TransformIntoForest(positionDesired[0], positionDesired[1]);
             _desertArrIntHashSet.Remove(positionDesired);
         }
         else if (positionDesired[0] != -5 && positionDesired[1] != -5 &&
-                 (_poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)))
+                 (_poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
+                 (positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1]))
         {
-            Debug.Log("I AM STARTING");
             Cell cell = _gridCell[_startingPosition[0], _startingPosition[1]].GetComponent<Cell>();
             _astronautScript.SetAllPositionAstronaut(_startingPosition[0], _startingPosition[1], cell.GetPosition());
             ConvertAllForestIntoDesert();
             
             TransformIntoForest(_startingPosition[0],_startingPosition[1]);
-            Debug.Log(_forestArrIntHashSet);
             _desertArrIntHashSet.Remove(_startingPosition);
         }
     }
 
-    private void ConvertAllForestIntoDesert()
-    {
-        foreach (var forest in _forestArrIntHashSet)
-            TransformIntoDesert(forest[0], forest[1]);
-        _forestArrIntHashSet.Clear();
-    }
+
 
     private GameObject TransformTerrainIntoAnother(int x, int y, CellType cellType)
     {
@@ -245,16 +261,28 @@ public class Grid : MonoBehaviour
         cellGameObject.transform.parent = parent.transform;
         return parent;
     }
-
+    
     private void TransformIntoForest(int x, int y)
     {
         TransformTerrainIntoAnother(x, y, CellType.Forest);
         _forestArrIntHashSet.Add(new[] {x, y});
     }
 
+    private void TransformIntoFinalCell(int x, int y)
+    {
+        TransformTerrainIntoAnother(x, y, CellType.Final);
+    }
+    
     private void TransformIntoDesert(int x, int y)
     {
         TransformTerrainIntoAnother(x, y, CellType.Desert);
         _desertArrIntHashSet.Add(new[] {x, y});
+    }
+    
+    private void ConvertAllForestIntoDesert()
+    {
+        foreach (var forest in _forestArrIntHashSet)
+            TransformIntoDesert(forest[0], forest[1]);
+        _forestArrIntHashSet.Clear();
     }
 }
