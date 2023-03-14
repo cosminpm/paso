@@ -918,6 +918,8 @@ MonoBehaviour:
   - {fileID: 1217813119983272715, guid: cf71c2504af1683408f12370a0f91910, type: 3}
   forestGameObjectList:
   - {fileID: 1217813119983272715, guid: 6cbfd1c92efc48846942f9b9590942a4, type: 3}
+  finalGameObjectList:
+  - {fileID: 1217813119983272715, guid: ceb770b976fcd2f41b56283dc5ec4695, type: 3}
 --- !u!4 &1692177317
 Transform:
   m_ObjectHideFlags: 0
