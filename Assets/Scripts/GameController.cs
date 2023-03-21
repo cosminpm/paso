@@ -19,9 +19,8 @@ public class GameController: MonoBehaviour
         _grid.InstantiateAstronaut();
         setDFSSize();
         _longestPath.InitializeDFS();
-        CreatePathForGrid();
-        longestPathListCells = new List<int[]>(_longestPath.GetLongestPath(_grid.poisonArrIntHashSet, _grid.startingPosition));
-
+        longestPathListCells = _longestPath.FindLongestPath(_grid.startingPosition, _grid.poisonArrIntHashSet);
+        Debug.Log("FINAL_RESULT:"+longestPathListCells.Count);
     }
 
     private void setDFSSize()
@@ -30,19 +29,12 @@ public class GameController: MonoBehaviour
         _longestPath.rows = _grid.rows;
     }
     
-    private void CreatePathForGrid()
-    {
-        int longestPath = 0;
-        int total_distance = _longestPath.DFS(_grid.startingPosition, _grid.poisonArrIntHashSet);
-    }
-
-    
     
     private void OnDrawGizmos()
     {
         if (drawGizmos)
         {
-            _longestPath.DrawDebugVisited(_grid.gridCell, longestPathListCells);
+            _longestPath.DrawDebugVisited(longestPathListCells, _grid.gridCell);
         }
     }
 }

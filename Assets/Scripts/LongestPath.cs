@@ -19,32 +19,51 @@ public class LongestPath : MonoBehaviour
         {
             for (int j = 0; j < columns; j++)
             {
-                _distances[i, j] = int.MinValue;
+                _distances[i, j] = int.MaxValue;
                 _visited[i, j] = false;
             }
         }
     }
 
-    public int DFS(int[] cell, HashSet<int[]> posionCells)
-    {
-        _visited[cell[0], cell[1]] = true;
-        int maxDistance = 0;
+    public List<int[]> FindLongestPath(int[] startPosition, HashSet<int[]> posisonCells) {
+        List<int[]> longestPath = new List<int[]>();
+        HashSet<int[]> visited = new HashSet<int[]>(new IntArrayEqualityComparer());
+        List<int[]> currentPath = new List<int[]>();
+        FindLongestPathHelper(startPosition, visited, currentPath, posisonCells, ref longestPath);
+        return longestPath;
+    }
 
-        foreach (int[] neighbor in GetNeighbors(cell, posionCells))
-        {
-            if (!_visited[neighbor[0], neighbor[1]])
-            {
-                int distance = DFS(neighbor, posionCells);
-                maxDistance = Mathf.Max(maxDistance, distance);
+    private void FindLongestPathHelper(int[] currentPosition, HashSet<int[]> visited, 
+        List<int[]> currentPath, HashSet<int[]> poisonCells,  ref List<int[]> longestPath) {
+        
+        visited.Add(currentPosition);
+        currentPath.Add(currentPosition);
+
+        List<int[]> possibleMoves = GetNeighbors(currentPosition, poisonCells);
+        List<int[]> validMoves = new List<int[]>();
+        foreach (int[] move in possibleMoves) {
+            if (!visited.Contains(move) && !poisonCells.Contains(move)) {
+                validMoves.Add(move);
             }
         }
 
-        _visited[cell[0], cell[1]] = false;
-        _distances[cell[0], cell[1]] = Mathf.Max(_distances[cell[0], cell[1]],maxDistance + 1);
+        if (validMoves.Count == 0 ) {
+            if (currentPath.Count > longestPath.Count)
+            {
+                longestPath.Clear();
+                for (int i = 0; i < currentPath.Count; i++)
+                    longestPath.Add(new []{currentPath[i][0],currentPath[i][1]});
+                
+            }
+        } else {
+            foreach (int[] move in validMoves) {
+                FindLongestPathHelper(move, visited, currentPath, poisonCells, ref longestPath);
+            }
+        }
 
-        return maxDistance +1;
+        visited.Remove(currentPosition);
+        currentPath.RemoveAt(currentPath.Count - 1);
     }
-
     private bool CheckCellGoodNeighbour(int[] cell, HashSet<int[]> posionCells)
     {
         if (cell[0] >= 0 &&
@@ -78,66 +97,16 @@ public class LongestPath : MonoBehaviour
         {
             neighbors.Add(new[] {cell[0], cell[1] + 1});
         }
-
         return neighbors;
     }
 
-    private int[] NextCellInNeighbours(List<int[]> neighbours, HashSet<int[]> alreadyVisited)
-    {
-        int max = -1;
-        int[] result = null;
-        for (int i = 0; i < neighbours.Count; i++)
-        {
-            int[] neighbour = neighbours[i];
-            if (!alreadyVisited.Contains(neighbour) && _distances[neighbour[0],neighbour[1]] > max)
-            {
-                max = _distances[neighbour[0], neighbour[1]];
-                result = new[] {neighbour[0], neighbour[1]};
-            }
-        }
-        return result;
-    }
 
-    public List<int[]> GetLongestPath(HashSet<int[]> poisonCells, int[] starCell)
+    public void DrawDebugVisited(List<int[]> longestPath, GameObject[,] grid)
     {
-        int[] currentCell = {starCell[0], starCell[1]};
-        int currentWeight = _distances[currentCell[0], currentCell[1]];
-        List<int[]> longestPath = new List<int[]>();
-
-        HashSet<int[]> alreadyVisited = new HashSet<int[]>(new IntArrayEqualityComparer());
-
-        while (currentWeight > 0)
+        for (int i = 0; i < longestPath.Count; i++)
         {
-            List<int[]> neighbors = GetNeighbors(currentCell, poisonCells);
-            int [] aux  = NextCellInNeighbours(neighbors, alreadyVisited);
-            alreadyVisited.Add(aux);
-            if (aux == null) 
-                break;
-            currentCell = new[] {aux[0], aux[1]};
-            currentWeight -= 1;
-            longestPath.Add(currentCell);
-        }
-        return longestPath;
-    }
-    
-    
-    public void DrawDebugVisited(GameObject[,] grid, List<int[]> longestPath)
-    {
-        foreach (var cell in longestPath)
-        {
-            Gizmos.DrawWireCube(grid[cell[0], cell[1]].transform.position, new Vector3(.5f, .5f, .5f));
-            Handles.Label(grid[cell[0], cell[1]].transform.position, _distances[cell[0], cell[1]].ToString());
-        }
-    
-        Gizmos.color = Color.red;
-        for (int i = 0; i < _distances.GetLength(0); i++)
-        {
-           
-            for (int j = 0; j < _distances.GetLength(1); j++)
-            {
-                Gizmos.DrawWireCube(grid[i,j].transform.position, new Vector3(.25f, .25f, .25f));
-                Handles.Label(grid[i,j].transform.position, _distances[i,j].ToString());
-            } 
+            Gizmos.DrawWireCube(grid[longestPath[i][0],longestPath[i][1]].transform.position,new Vector3(.5f,.5f,.5f));
+            Handles.Label(grid[longestPath[i][0],longestPath[i][1]].transform.position, i.ToString());
         }
     }
 }
