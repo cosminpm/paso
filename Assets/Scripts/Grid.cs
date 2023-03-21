@@ -17,13 +17,13 @@ public class Grid : MonoBehaviour
     public List<GameObject> forestGameObjectList;
     public List<GameObject> finalGameObjectList;
 
-    private GameObject[,] _gridCell;
+    public GameObject[,] gridCell;
 
-    private int[] _startingPosition;
+    public int[] startingPosition;
     private int[] _finalPosition;
 
     private HashSet<int[]> _desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
-    private HashSet<int[]> _poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
+    public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
 
 
@@ -43,19 +43,12 @@ public class Grid : MonoBehaviour
     {
         int randomRow = Random.Range(0, rows);
         int randomCol = Random.Range(0, columns);
-        return _gridCell[randomRow, randomCol];
+        return gridCell[randomRow, randomCol];
     }
 
     private void Update()
     {
         MoveAstronaut();
-    }
-
-    void Start()
-    {
-        InstantiateDictionaryCellType();
-        InstantiateGrid();
-        InstantiateAstronaut();
     }
 
 
@@ -100,7 +93,7 @@ public class Grid : MonoBehaviour
         return null;
     }
 
-    private void InstantiateDictionaryCellType()
+    public void InstantiateDictionaryCellType()
     {
         _dictCellTypeListGameObjects = new Dictionary<CellType, List<GameObject>>()
         {
@@ -111,10 +104,10 @@ public class Grid : MonoBehaviour
         };
     }
 
-    void InstantiateGrid()
+    public void InstantiateGrid()
     {
 
-        _gridCell = new GameObject[rows, columns];
+        gridCell = new GameObject[rows, columns];
         Transform cube = cellPrefab.transform.Find("Cube");
         Vector3 cellSize = cube.GetComponent<Renderer>().bounds.size;
 
@@ -138,13 +131,13 @@ public class Grid : MonoBehaviour
                 parent.GetComponent<Cell>().CreateCell(cellPosition, i, j, parent, ct);
 
                 if (ct == CellType.DesertPoison)
-                    _poisonArrIntHashSet.Add(new[] {i, j});
+                    poisonArrIntHashSet.Add(new[] {i, j});
                 else
                 {
                     _desertArrIntHashSet.Add(new[] {i, j});
                 }
 
-                _gridCell[i, j] = parent;
+                gridCell[i, j] = parent;
             }
         }
 
@@ -161,14 +154,14 @@ public class Grid : MonoBehaviour
     }
 
 
-    void InstantiateAstronaut()
+    public void InstantiateAstronaut()
     {
         int[] pos = GetRandomFromSet(_desertArrIntHashSet);
-        GameObject startCellAstronaut = _gridCell[pos[0], pos[1]];
+        GameObject startCellAstronaut = gridCell[pos[0], pos[1]];
         TransformIntoForest(pos[0],pos[1]);
         Cell cellStart = startCellAstronaut.GetComponent<Cell>();
 
-        _startingPosition = new[] {cellStart.GetX(), cellStart.GetY()};
+        startingPosition = new[] {cellStart.GetX(), cellStart.GetY()};
 
         GameObject astronautGameObject = GameObject.Find("Astronaut");
         Astronaut astronautScript = astronautGameObject.AddComponent<Astronaut>();
@@ -218,13 +211,13 @@ public class Grid : MonoBehaviour
 
         // Check if position is a position inside the grid
         if (IsPositionIsInsideGrid(positionDesired) &&
-            !_poisonArrIntHashSet.Contains(positionDesired) &&
+            !poisonArrIntHashSet.Contains(positionDesired) &&
             !_forestArrIntHashSet.Contains(positionDesired) &&
             !(positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
             || DidPlayerFinishedWithDesiredPosition(positionDesired)
             )
         {
-            GameObject parent = _gridCell[positionDesired[0], positionDesired[1]];
+            GameObject parent = gridCell[positionDesired[0], positionDesired[1]];
 
             _astronautScript.SetAllPositionAstronaut(positionDesired[0], positionDesired[1],
                 parent.GetComponent<Cell>().GetPosition());
@@ -232,15 +225,15 @@ public class Grid : MonoBehaviour
             _desertArrIntHashSet.Remove(positionDesired);
         }
         else if (positionDesired[0] != -5 && positionDesired[1] != -5 &&
-                 (_poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
+                 (poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
                  (positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1]))
         {
-            Cell cell = _gridCell[_startingPosition[0], _startingPosition[1]].GetComponent<Cell>();
-            _astronautScript.SetAllPositionAstronaut(_startingPosition[0], _startingPosition[1], cell.GetPosition());
+            Cell cell = gridCell[startingPosition[0], startingPosition[1]].GetComponent<Cell>();
+            _astronautScript.SetAllPositionAstronaut(startingPosition[0], startingPosition[1], cell.GetPosition());
             ConvertAllForestIntoDesert();
             
-            TransformIntoForest(_startingPosition[0],_startingPosition[1]);
-            _desertArrIntHashSet.Remove(_startingPosition);
+            TransformIntoForest(startingPosition[0],startingPosition[1]);
+            _desertArrIntHashSet.Remove(startingPosition);
         }
     }
 
@@ -248,7 +241,7 @@ public class Grid : MonoBehaviour
 
     private GameObject TransformTerrainIntoAnother(int x, int y, CellType cellType)
     {
-        GameObject parent = _gridCell[x, y];
+        GameObject parent = gridCell[x, y];
         foreach (Transform child in parent.transform)
         {
             // Destroy the child GameObject
