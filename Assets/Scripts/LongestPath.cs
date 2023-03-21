@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
 
 public class LongestPath : MonoBehaviour
 {
@@ -12,7 +9,7 @@ public class LongestPath : MonoBehaviour
 
     private int[,] _distances;
     private bool[,] _visited;
-    
+
     public void InitializeDFS()
     {
         // Initialize distances and visited arrays
@@ -41,12 +38,12 @@ public class LongestPath : MonoBehaviour
                 maxDistance = Mathf.Max(maxDistance, distance);
             }
         }
+
         _visited[cell[0], cell[1]] = false;
-        _distances[cell[0], cell[1]] = maxDistance + 1;
+        _distances[cell[0], cell[1]] = Mathf.Max(_distances[cell[0], cell[1]],maxDistance + 1);
 
-        return maxDistance + 1;
+        return maxDistance +1;
     }
-
 
     private bool CheckCellGoodNeighbour(int[] cell, HashSet<int[]> posionCells)
     {
@@ -85,19 +82,20 @@ public class LongestPath : MonoBehaviour
         return neighbors;
     }
 
-    private int[] NextCellInNeighbours(List<int[]> neighbours, int currentWeight)
+    private int[] NextCellInNeighbours(List<int[]> neighbours, HashSet<int[]> alreadyVisited)
     {
-        
+        int max = -1;
+        int[] result = null;
         for (int i = 0; i < neighbours.Count; i++)
         {
             int[] neighbour = neighbours[i];
-            if (_distances[neighbour[0],neighbour[1]] == currentWeight - 1)
+            if (!alreadyVisited.Contains(neighbour) && _distances[neighbour[0],neighbour[1]] > max)
             {
-                return neighbour;
+                max = _distances[neighbour[0], neighbour[1]];
+                result = new[] {neighbour[0], neighbour[1]};
             }
         }
-        Debug.Log("ESTOY DEVOLVIENDO NULOOOOO");
-        return null;
+        return result;
     }
 
     public List<int[]> GetLongestPath(HashSet<int[]> poisonCells, int[] starCell)
@@ -106,10 +104,13 @@ public class LongestPath : MonoBehaviour
         int currentWeight = _distances[currentCell[0], currentCell[1]];
         List<int[]> longestPath = new List<int[]>();
 
-        while (currentWeight > 1)
+        HashSet<int[]> alreadyVisited = new HashSet<int[]>(new IntArrayEqualityComparer());
+
+        while (currentWeight > 0)
         {
             List<int[]> neighbors = GetNeighbors(currentCell, poisonCells);
-            int [] aux  = NextCellInNeighbours(neighbors, currentWeight);
+            int [] aux  = NextCellInNeighbours(neighbors, alreadyVisited);
+            alreadyVisited.Add(aux);
             if (aux == null) 
                 break;
             currentCell = new[] {aux[0], aux[1]};

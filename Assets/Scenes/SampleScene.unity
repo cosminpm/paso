@@ -676,6 +676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa5ebc9bcbcc4913a70688844a381f1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawGizmos: 0
 --- !u!4 &1469192985
 Transform:
   m_ObjectHideFlags: 0
@@ -736,7 +737,6 @@ MonoBehaviour:
   - {fileID: 1217813119983272715, guid: 3991db1677cf78d45b0be97e6d994cdb, type: 3}
   - {fileID: 1217813119983272715, guid: aee9d503ebf3d9040afe660d3c466799, type: 3}
   - {fileID: 1217813119983272715, guid: a5dc866f783fbc845b594cdcb1a01310, type: 3}
-  - {fileID: 1217813119983272715, guid: 23b3792c07b032f4c84449f9263da1f7, type: 3}
   poisonDesertGameObjectList:
   - {fileID: 1217813119983272715, guid: cf71c2504af1683408f12370a0f91910, type: 3}
   forestGameObjectList:
@@ -773,7 +773,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rows: 0
   columns: 0
-  startCell: 
 --- !u!1001 &1865427988
 PrefabInstance:
   m_ObjectHideFlags: 0
