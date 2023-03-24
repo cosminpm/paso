@@ -21,7 +21,6 @@ public class FollowPlayerCamera : MonoBehaviour
 
     private Vector3 CalculateMiddleMap(float rows, float columns, float sizeSquare)
     {
-        Debug.Log(rows +" " + columns+" " + sizeSquare);
         float middleRows = rows * sizeSquare / 2.0f;
         float middleColums = columns * sizeSquare / 2.0f;
         return new Vector3(middleRows, distanceFromGround, middleColums); 
@@ -30,7 +29,6 @@ public class FollowPlayerCamera : MonoBehaviour
     public void SetCameraMiddleMap(int rows, int columns, float sizeSquare)
     {
         Vector3 center = CalculateMiddleMap(rows, columns, sizeSquare);
-        Debug.Log(center);
         transform.position = center;
     }
     

@@ -38,12 +38,12 @@ public class Grid : MonoBehaviour
         Forest,
         Final
     }
-    
+
     private void Update()
     {
         MoveAstronaut();
     }
-    
+
 
     private T GetRandomFromList<T>(List<T> objects)
     {
@@ -134,11 +134,11 @@ public class Grid : MonoBehaviour
         }
     }
 
-    
-    public void CreateFinalCellPosition(int[] pos )
+
+    public void CreateFinalCellPosition(int[] pos)
     {
         _finalPosition = pos;
-        TransformIntoFinalCell(pos[0],pos[1]);
+        TransformIntoFinalCell(pos[0], pos[1]);
         desertArrIntHashSet.Remove(pos);
     }
 
@@ -147,7 +147,7 @@ public class Grid : MonoBehaviour
     {
         int[] pos = GetRandomFromSet(desertArrIntHashSet);
         GameObject startCellAstronaut = gridCell[pos[0], pos[1]];
-        TransformIntoForest(pos[0],pos[1]);
+        TransformIntoForest(pos[0], pos[1]);
         Cell cellStart = startCellAstronaut.GetComponent<Cell>();
 
         startingPosition = new[] {cellStart.GetX(), cellStart.GetY()};
@@ -168,35 +168,49 @@ public class Grid : MonoBehaviour
         return true;
     }
 
-    private int[] GetPositionDesired()
+    private int[] GetPositionDesiredAndRotate()
     {
         // Check input 
         int[] positionDesired = {-5, -5};
         if (Input.GetKeyDown("up"))
+        {
+            _astronautScript.RotatePlayer(Vector3.forward);
             positionDesired = new[] {_astronautScript.GetX(), _astronautScript.GetY() + 1};
+        }
 
         else if (Input.GetKeyDown("down"))
+        {
             positionDesired = new[] {_astronautScript.GetX(), _astronautScript.GetY() - 1};
+            _astronautScript.RotatePlayer(Vector3.back);
+        }
 
         else if (Input.GetKeyDown("right"))
+        {
             positionDesired = new[] {_astronautScript.GetX() + 1, _astronautScript.GetY()};
+            _astronautScript.RotatePlayer(Vector3.right);
+        }
 
         else if (Input.GetKeyDown("left"))
+        {
             positionDesired = new[] {_astronautScript.GetX() - 1, _astronautScript.GetY()};
+            _astronautScript.RotatePlayer(Vector3.left);
+        }
+
         return positionDesired;
     }
 
 
     private bool DidPlayerFinishedWithDesiredPosition(int[] positionDesired)
     {
-        if (desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
+        if (desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] &&
+            positionDesired[1] == _finalPosition[1])
             return true;
         return false;
     }
-    
+
     private void MoveAstronaut()
     {
-        int [] positionDesired = GetPositionDesired();
+        int[] positionDesired = GetPositionDesiredAndRotate();
 
         // Check if position is a position inside the grid
         if (IsPositionIsInsideGrid(positionDesired) &&
@@ -204,7 +218,7 @@ public class Grid : MonoBehaviour
             !_forestArrIntHashSet.Contains(positionDesired) &&
             !(positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
             || DidPlayerFinishedWithDesiredPosition(positionDesired)
-            )
+        )
         {
             GameObject parent = gridCell[positionDesired[0], positionDesired[1]];
 
@@ -215,18 +229,16 @@ public class Grid : MonoBehaviour
         }
         else if (positionDesired[0] != -5 && positionDesired[1] != -5 &&
                  (poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
-                 (positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1]))
+                 positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
         {
             Cell cell = gridCell[startingPosition[0], startingPosition[1]].GetComponent<Cell>();
             _astronautScript.SetAllPositionAstronaut(startingPosition[0], startingPosition[1], cell.GetPosition());
             ConvertAllForestIntoDesert();
-            
-            TransformIntoForest(startingPosition[0],startingPosition[1]);
+
+            TransformIntoForest(startingPosition[0], startingPosition[1]);
             desertArrIntHashSet.Remove(startingPosition);
         }
     }
-
-
 
     private GameObject TransformTerrainIntoAnother(int x, int y, CellType cellType)
     {
@@ -236,14 +248,14 @@ public class Grid : MonoBehaviour
             // Destroy the child GameObject
             Destroy(child.gameObject);
         }
-        
+
         GameObject go = GetRandomFromList(_dictCellTypeListGameObjects[cellType]);
 
         GameObject cellGameObject = Instantiate(go, parent.transform.position, Quaternion.identity, parent.transform);
         cellGameObject.transform.parent = parent.transform;
         return parent;
     }
-    
+
     private void TransformIntoForest(int x, int y)
     {
         TransformTerrainIntoAnother(x, y, CellType.Forest);
@@ -255,22 +267,46 @@ public class Grid : MonoBehaviour
         TransformTerrainIntoAnother(x, y, CellType.DesertPoison);
         poisonArrIntHashSet.Add(new[] {x, y});
     }
-    
+
     private void TransformIntoFinalCell(int x, int y)
     {
         TransformTerrainIntoAnother(x, y, CellType.Final);
     }
-    
+
     private void TransformIntoDesert(int x, int y)
     {
         TransformTerrainIntoAnother(x, y, CellType.Desert);
         desertArrIntHashSet.Add(new[] {x, y});
     }
-    
+
     private void ConvertAllForestIntoDesert()
     {
         foreach (var forest in _forestArrIntHashSet)
             TransformIntoDesert(forest[0], forest[1]);
         _forestArrIntHashSet.Clear();
+    }
+
+
+    public bool IsLevelFinished()
+    {
+        int[] pos = {_astronautScript.GetX(), _astronautScript.GetY()};
+        return DidPlayerFinishedWithDesiredPosition(pos);
+    }
+
+    public void DestroyLevel()
+    {
+        gridCell = new GameObject[rows, columns];
+        DestroyAllChildren();
+        desertArrIntHashSet.Clear();
+        poisonArrIntHashSet.Clear();
+        _forestArrIntHashSet.Clear();
+    }
+
+    public void DestroyAllChildren()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
     }
 }

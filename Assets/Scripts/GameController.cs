@@ -14,15 +14,36 @@ public class GameController : MonoBehaviour
     private FollowPlayerCamera _cameraController;
     private Astronaut _astronaut;
 
-    private bool _startFinished;
-
     private void Start()
+    {
+        InitializeVariables();
+        CreateLevel();
+    }
+    private void Update()
+    {
+        CreateNewLevel();
+    }
+
+    private void CreateNewLevel()
+    {
+        if (_grid.IsLevelFinished())
+        {
+            Debug.Log("NEW LEVEL!!!");
+            DestroyLevel();
+            CreateLevel();
+        }
+    }
+    
+    private void InitializeVariables()
     {
         _grid = GameObject.Find("Grid").GetComponent<Grid>();
         _longestPath = GameObject.Find("Grid").GetComponent<LongestPath>();
         _cameraController = GameObject.Find("Main Camera").GetComponent<FollowPlayerCamera>();
-
         _grid.InstantiateDictionaryCellType();
+    }
+
+    private void CreateLevel()
+    {
         _grid.InstantiateGrid();
         
         _grid.InstantiateAstronaut();
@@ -39,10 +60,11 @@ public class GameController : MonoBehaviour
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
     }
 
-    private void Update()
+    private void DestroyLevel()
     {
-    
+        _grid.DestroyLevel();
     }
+
 
     private void SetDFSSize()
     {

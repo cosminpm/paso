@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Astronaut : MonoBehaviour
 {
+    
+    public float rotateSpeed = 100f; // The speed at which the player will rotate
     private int _x, _y;
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -59,5 +61,21 @@ public class Astronaut : MonoBehaviour
         return _y;
     }
     
+    public void RotatePlayer(Vector3 direction)
+    {
+        // Calculate the desired rotation based on the specified direction
+        Quaternion desiredRotation = Quaternion.identity;
+        if (direction == Vector3.forward)
+            desiredRotation = Quaternion.Euler(0, 0, 0);
+        else if (direction == Vector3.back)
+            desiredRotation = Quaternion.Euler(0, 180, 0);
+        else if (direction == Vector3.right)
+            desiredRotation = Quaternion.Euler(0, 90, 0);
+        else if (direction == Vector3.left)
+            desiredRotation = Quaternion.Euler(0, -90, 0);
+    
+        // Set the player's rotation to the desired rotation
+        transform.rotation = desiredRotation;
+    }
     
 }
