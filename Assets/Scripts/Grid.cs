@@ -1,7 +1,6 @@
+using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using Random = UnityEngine.Random;
 
 public class Grid : MonoBehaviour
@@ -22,14 +21,15 @@ public class Grid : MonoBehaviour
     public int[] startingPosition;
     private int[] _finalPosition;
 
-    private HashSet<int[]> _desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
+    public HashSet<int[]> desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
 
 
     private Astronaut _astronautScript;
-
     private Dictionary<CellType, List<GameObject>> _dictCellTypeListGameObjects;
+
+    public Vector3 sizeOfCell;
 
     public enum CellType
     {
@@ -39,19 +39,11 @@ public class Grid : MonoBehaviour
         Final
     }
     
-    private GameObject GetRandomGridCell()
-    {
-        int randomRow = Random.Range(0, rows);
-        int randomCol = Random.Range(0, columns);
-        return gridCell[randomRow, randomCol];
-    }
-
     private void Update()
     {
         MoveAstronaut();
     }
-
-
+    
 
     private T GetRandomFromList<T>(List<T> objects)
     {
@@ -76,7 +68,6 @@ public class Grid : MonoBehaviour
 
     private CellType CalculateTypeCell(int x, int y)
     {
-        // Divide by rows and columns as PerlinNoise function needs float values
         float val = Mathf.PerlinNoise((float) x / rows * scaler, (float) y / columns * scaler);
 
         if (val > limiterPerlinNoise)
@@ -106,6 +97,7 @@ public class Grid : MonoBehaviour
 
     public void InstantiateGrid()
     {
+        sizeOfCell = GetRandomFromList(desertGameObjectList).transform.GetChild(0).GetComponent<Renderer>().bounds.size;
 
         gridCell = new GameObject[rows, columns];
         Transform cube = cellPrefab.transform.Find("Cube");
@@ -134,29 +126,26 @@ public class Grid : MonoBehaviour
                     poisonArrIntHashSet.Add(new[] {i, j});
                 else
                 {
-                    _desertArrIntHashSet.Add(new[] {i, j});
+                    desertArrIntHashSet.Add(new[] {i, j});
                 }
 
                 gridCell[i, j] = parent;
             }
         }
-
-        CreateFinalCellPosition();
     }
 
     
-    private void CreateFinalCellPosition()
+    public void CreateFinalCellPosition(int[] pos )
     {
-        int[] pos = GetRandomFromSet(_desertArrIntHashSet);
         _finalPosition = pos;
         TransformIntoFinalCell(pos[0],pos[1]);
-        _desertArrIntHashSet.Remove(pos);
+        desertArrIntHashSet.Remove(pos);
     }
 
 
     public void InstantiateAstronaut()
     {
-        int[] pos = GetRandomFromSet(_desertArrIntHashSet);
+        int[] pos = GetRandomFromSet(desertArrIntHashSet);
         GameObject startCellAstronaut = gridCell[pos[0], pos[1]];
         TransformIntoForest(pos[0],pos[1]);
         Cell cellStart = startCellAstronaut.GetComponent<Cell>();
@@ -200,7 +189,7 @@ public class Grid : MonoBehaviour
 
     private bool DidPlayerFinishedWithDesiredPosition(int[] positionDesired)
     {
-        if (_desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
+        if (desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
             return true;
         return false;
     }
@@ -222,7 +211,7 @@ public class Grid : MonoBehaviour
             _astronautScript.SetAllPositionAstronaut(positionDesired[0], positionDesired[1],
                 parent.GetComponent<Cell>().GetPosition());
             TransformIntoForest(positionDesired[0], positionDesired[1]);
-            _desertArrIntHashSet.Remove(positionDesired);
+            desertArrIntHashSet.Remove(positionDesired);
         }
         else if (positionDesired[0] != -5 && positionDesired[1] != -5 &&
                  (poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
@@ -233,7 +222,7 @@ public class Grid : MonoBehaviour
             ConvertAllForestIntoDesert();
             
             TransformIntoForest(startingPosition[0],startingPosition[1]);
-            _desertArrIntHashSet.Remove(startingPosition);
+            desertArrIntHashSet.Remove(startingPosition);
         }
     }
 
@@ -261,6 +250,12 @@ public class Grid : MonoBehaviour
         _forestArrIntHashSet.Add(new[] {x, y});
     }
 
+    public void TransformIntoPoison(int x, int y)
+    {
+        TransformTerrainIntoAnother(x, y, CellType.DesertPoison);
+        poisonArrIntHashSet.Add(new[] {x, y});
+    }
+    
     private void TransformIntoFinalCell(int x, int y)
     {
         TransformTerrainIntoAnother(x, y, CellType.Final);
@@ -269,7 +264,7 @@ public class Grid : MonoBehaviour
     private void TransformIntoDesert(int x, int y)
     {
         TransformTerrainIntoAnother(x, y, CellType.Desert);
-        _desertArrIntHashSet.Add(new[] {x, y});
+        desertArrIntHashSet.Add(new[] {x, y});
     }
     
     private void ConvertAllForestIntoDesert()

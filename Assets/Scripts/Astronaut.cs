@@ -5,8 +5,6 @@ using UnityEngine;
 public class Astronaut : MonoBehaviour
 {
     private int _x, _y;
-    private Vector3 _position;
-    
 
     // Update is called once per frame
     void Update()
@@ -14,18 +12,21 @@ public class Astronaut : MonoBehaviour
         
     }
 
+    public Vector3 GetPosition()
+    {
+        return transform.position;
+    }
+    
     public void InstantiateAstronaut(int x, int y, Vector3 position)
     {
         _x = x;
         _y = y;
-        _position = position;
-        transform.position = _position;
+        transform.position = position;
     }
 
     public void SetPosition(Vector3 position)
     {
-        _position = position;
-        transform.position = _position;
+        transform.position = position;
     }
 
     public void SetX(int x)
@@ -38,6 +39,9 @@ public class Astronaut : MonoBehaviour
         _y = y;
     }
 
+    
+    
+    
     public void SetAllPositionAstronaut(int x, int y, Vector3 position)
     {
         SetX(x);
