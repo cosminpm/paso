@@ -28,7 +28,9 @@ public class GameController : MonoBehaviour
     {
         if (_grid.IsLevelFinished())
         {
-            Debug.Log("NEW LEVEL!!!");
+            Debug.Log("LEVEL FINISHED");
+            _grid.SetRandomLimiterPerlinNoise(.5f, .75f);
+            _grid.SetRandomScaler(2f, 10f);
             DestroyLevel();
             CreateLevel();
         }

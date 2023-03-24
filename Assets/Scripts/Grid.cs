@@ -31,6 +31,17 @@ public class Grid : MonoBehaviour
 
     public Vector3 sizeOfCell;
 
+    public void SetRandomLimiterPerlinNoise(float downLimiter, float upLimiter)
+    {
+        float randomValue = Random.Range(downLimiter, upLimiter);
+        limiterPerlinNoise = randomValue;
+    }
+    public void SetRandomScaler(float downLimiter, float upLimiter)
+    {
+        float randomValue = Random.Range(downLimiter, upLimiter);
+        scaler = randomValue;
+    }
+    
     public enum CellType
     {
         Desert,
@@ -151,7 +162,9 @@ public class Grid : MonoBehaviour
         Cell cellStart = startCellAstronaut.GetComponent<Cell>();
 
         startingPosition = new[] {cellStart.GetX(), cellStart.GetY()};
-
+        desertArrIntHashSet.Remove(startingPosition);
+        _forestArrIntHashSet.Add(startingPosition);
+        
         GameObject astronautGameObject = GameObject.Find("Astronaut");
         Astronaut astronautScript = astronautGameObject.AddComponent<Astronaut>();
         astronautScript.InstantiateAstronaut(cellStart.GetX(), cellStart.GetY(), cellStart.GetPosition());
@@ -202,6 +215,7 @@ public class Grid : MonoBehaviour
 
     private bool DidPlayerFinishedWithDesiredPosition(int[] positionDesired)
     {
+        Debug.Log(desertArrIntHashSet.Count);
         if (desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] &&
             positionDesired[1] == _finalPosition[1])
             return true;
