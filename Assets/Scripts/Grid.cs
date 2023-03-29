@@ -41,6 +41,12 @@ public class Grid : MonoBehaviour
         float randomValue = Random.Range(downLimiter, upLimiter);
         scaler = randomValue;
     }
+
+    public void SetRandomColumnsAndRows(int downLimiter, int upLimiter)
+    {
+        columns = Random.Range(downLimiter, upLimiter);
+        rows = Random.Range(downLimiter, upLimiter);
+    }
     
     public enum CellType
     {
@@ -50,10 +56,7 @@ public class Grid : MonoBehaviour
         Final
     }
 
-    private void Update()
-    {
-        MoveAstronaut();
-    }
+
 
 
     private T GetRandomFromList<T>(List<T> objects)
@@ -222,7 +225,7 @@ public class Grid : MonoBehaviour
         return false;
     }
 
-    private void MoveAstronaut()
+    public void MoveAstronaut()
     {
         int[] positionDesired = GetPositionDesiredAndRotate();
 
