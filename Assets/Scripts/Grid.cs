@@ -174,6 +174,7 @@ public class Grid : MonoBehaviour
         
         GameObject astronautGameObject = GameObject.Find("Astronaut");
         Astronaut astronautScript = astronautGameObject.AddComponent<Astronaut>();
+        Debug.Log("AAA" + astronautScript);
         astronautScript.InstantiateAstronaut(cellStart.GetX(), cellStart.GetY(), cellStart.GetPosition());
         _astronautScript = astronautScript;
     }
