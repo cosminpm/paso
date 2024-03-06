@@ -19,21 +19,16 @@ public class Grid : MonoBehaviour
     public GameObject[,] gridCell;
 
     public int[] startingPosition;
-    private int[] _finalPosition;
+    private int[] _finalPosition = new []{-1,-1};
 
     public HashSet<int[]> desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private SoundManager _soundManager;
-    private Astronaut _astronautScript;
+    public AstronautController astronautController;
     private Dictionary<CellType, List<GameObject>> _dictCellTypeListGameObjects;
 
     public Vector3 sizeOfCell;
-
-    private void Start()
-    {
-        _soundManager = GameObject.Find("GameController").GetComponent<SoundManager>();
-    }
 
     public void SetRandomLimiterPerlinNoise(float downLimiter, float upLimiter)
     {
@@ -60,7 +55,7 @@ public class Grid : MonoBehaviour
         Final
     }
 
-
+    
 
 
     private T GetRandomFromList<T>(List<T> objects)
@@ -171,12 +166,7 @@ public class Grid : MonoBehaviour
         startingPosition = new[] {cellStart.GetX(), cellStart.GetY()};
         desertArrIntHashSet.Remove(startingPosition);
         _forestArrIntHashSet.Add(startingPosition);
-        
-        GameObject astronautGameObject = GameObject.Find("Astronaut");
-        Astronaut astronautScript = astronautGameObject.AddComponent<Astronaut>();
-        Debug.Log("AAA" + astronautScript);
-        astronautScript.InstantiateAstronaut(cellStart.GetX(), cellStart.GetY(), cellStart.GetPosition());
-        _astronautScript = astronautScript;
+        astronautController.InstantiateAstronaut(cellStart.GetX(), cellStart.GetY(), cellStart.GetPosition());
     }
 
     private bool IsPositionIsInsideGrid(int[] position)
@@ -195,26 +185,26 @@ public class Grid : MonoBehaviour
         int[] positionDesired = {-5, -5};
         if (Input.GetKeyDown("up"))
         {
-            _astronautScript.RotatePlayer(Vector3.forward);
-            positionDesired = new[] {_astronautScript.GetX(), _astronautScript.GetY() + 1};
+            astronautController.RotatePlayer(Vector3.forward);
+            positionDesired = new[] {astronautController.GetX(), astronautController.GetY() + 1};
         }
 
         else if (Input.GetKeyDown("down"))
         {
-            positionDesired = new[] {_astronautScript.GetX(), _astronautScript.GetY() - 1};
-            _astronautScript.RotatePlayer(Vector3.back);
+            positionDesired = new[] {astronautController.GetX(), astronautController.GetY() - 1};
+            astronautController.RotatePlayer(Vector3.back);
         }
 
         else if (Input.GetKeyDown("right"))
         {
-            positionDesired = new[] {_astronautScript.GetX() + 1, _astronautScript.GetY()};
-            _astronautScript.RotatePlayer(Vector3.right);
+            positionDesired = new[] {astronautController.GetX() + 1, astronautController.GetY()};
+            astronautController.RotatePlayer(Vector3.right);
         }
 
         else if (Input.GetKeyDown("left"))
         {
-            positionDesired = new[] {_astronautScript.GetX() - 1, _astronautScript.GetY()};
-            _astronautScript.RotatePlayer(Vector3.left);
+            positionDesired = new[] {astronautController.GetX() - 1, astronautController.GetY()};
+            astronautController.RotatePlayer(Vector3.left);
         }
 
         return positionDesired;
@@ -243,7 +233,7 @@ public class Grid : MonoBehaviour
         {
             GameObject parent = gridCell[positionDesired[0], positionDesired[1]];
 
-            _astronautScript.SetAllPositionAstronaut(positionDesired[0], positionDesired[1],
+            astronautController.SetAllPositionAstronaut(positionDesired[0], positionDesired[1],
                 parent.GetComponent<Cell>().GetPosition());
             TransformIntoForest(positionDesired[0], positionDesired[1]);
             desertArrIntHashSet.Remove(positionDesired);
@@ -253,7 +243,7 @@ public class Grid : MonoBehaviour
                  positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
         {
             Cell cell = gridCell[startingPosition[0], startingPosition[1]].GetComponent<Cell>();
-            _astronautScript.SetAllPositionAstronaut(startingPosition[0], startingPosition[1], cell.GetPosition());
+            astronautController.SetAllPositionAstronaut(startingPosition[0], startingPosition[1], cell.GetPosition());
             ConvertAllForestIntoDesert();
             _soundManager.PlayLevelFailed();
             TransformIntoForest(startingPosition[0], startingPosition[1]);
@@ -310,7 +300,7 @@ public class Grid : MonoBehaviour
 
     public bool IsLevelFinished()
     {
-        int[] pos = {_astronautScript.GetX(), _astronautScript.GetY()};
+        int[] pos = {astronautController.GetX(), astronautController.GetY()};
         return DidPlayerFinishedWithDesiredPosition(pos);
     }
 

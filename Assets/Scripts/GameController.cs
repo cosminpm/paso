@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -11,9 +12,12 @@ public class GameController : MonoBehaviour
     public bool drawGizmos;
     private List<int[]> _longestPathListCells;
     private FollowPlayerCamera _cameraController;
-    private Astronaut _astronaut;
-    private SoundManager _soundManager;
     
+    private SoundManager _soundManager;
+    private int _numberOfLevels = 1;
+    private TextMeshProUGUI _numberOfLevelsTextMeshProIn;
+    private TextMeshProUGUI _numberOfLevelsTextMeshProOut;
+
     
     private void Start()
     {
@@ -34,6 +38,10 @@ public class GameController : MonoBehaviour
             _grid.SetRandomScaler(2f, 10f);
             _grid.SetRandomColumnsAndRows(3,7);
             _soundManager.PlayLevelCompleted();
+            _numberOfLevels += 1;
+            _numberOfLevelsTextMeshProIn.text = _numberOfLevels.ToString();
+            _numberOfLevelsTextMeshProOut.text = _numberOfLevels.ToString();
+
             DestroyLevel();
             CreateLevel();
         }
@@ -44,14 +52,20 @@ public class GameController : MonoBehaviour
         _grid = GameObject.Find("Grid").GetComponent<Grid>();
         _longestPath = GameObject.Find("Grid").GetComponent<LongestPath>();
         _cameraController = GameObject.Find("Main Camera").GetComponent<FollowPlayerCamera>();
+
+        _grid.astronautController = GameObject.Find("Astronaut").GetComponent<AstronautController>();
+        
         _grid.InstantiateDictionaryCellType();
         _soundManager  = GetComponent<SoundManager>();
+        
+        _numberOfLevelsTextMeshProIn = GameObject.Find("Canvas").transform.Find("NumberOfLevelsIn").GetComponent<TextMeshProUGUI>();
+        _numberOfLevelsTextMeshProOut = GameObject.Find("Canvas").transform.Find("NumberOfLevelsOut").GetComponent<TextMeshProUGUI>();
+
     }
 
     private void CreateLevel()
     {
         _grid.InstantiateGrid();
-        
         _grid.InstantiateAstronaut();
 
         SetDFSSize();
@@ -61,8 +75,8 @@ public class GameController : MonoBehaviour
 
 
         TransformUnusedDesertIntoPoison(_longestPathListCells);
+        
         _grid.CreateFinalCellPosition(_longestPathListCells.Last());
-        _astronaut = GameObject.Find("Astronaut").GetComponent<Astronaut>();
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
     }
 

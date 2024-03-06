@@ -1,19 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Astronaut : MonoBehaviour
+public class AstronautController : MonoBehaviour
 {
     
-    public float rotateSpeed = 100f; // The speed at which the player will rotate
     private int _x, _y;
-    
 
-    public Vector3 GetPosition()
-    {
-        return transform.position;
-    }
-    
     public void InstantiateAstronaut(int x, int y, Vector3 position)
     {
         _x = x;
@@ -21,23 +12,20 @@ public class Astronaut : MonoBehaviour
         transform.position = position;
     }
 
-    public void SetPosition(Vector3 position)
+    private void SetPosition(Vector3 position)
     {
         transform.position = position;
     }
 
-    public void SetX(int x)
+    private void SetX(int x)
     {
         _x = x;
     }
 
-    public void SetY(int y)
+    private void SetY(int y)
     {
         _y = y;
     }
-
-    
-    
     
     public void SetAllPositionAstronaut(int x, int y, Vector3 position)
     {
