@@ -8,11 +8,6 @@ public class Astronaut : MonoBehaviour
     public float rotateSpeed = 100f; // The speed at which the player will rotate
     private int _x, _y;
     
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public Vector3 GetPosition()
     {

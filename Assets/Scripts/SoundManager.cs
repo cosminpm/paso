@@ -1,22 +1,27 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    public Dictionary<string, AudioClip> soundDict = new ();
-    private AudioSource audioSource;
+    private AudioSource _audioSource;
     public AudioClip levelCompletedSound;
     public AudioClip failedLevelSound;
+    public AudioClip backgroundMusic;
+
     private void Start()
     {
-        // Get the AudioSource component attached to this GameObject
-        audioSource = GetComponent<AudioSource>();
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.loop = true; 
+        _audioSource.clip = backgroundMusic; 
+        _audioSource.Play();
     }
 
 
     public void PlayLevelCompleted()
     {
-        audioSource.PlayOneShot(levelCompletedSound);
+        _audioSource.PlayOneShot(levelCompletedSound);
     }
-    
+    public void PlayLevelFailed()
+    {
+        _audioSource.PlayOneShot(failedLevelSound);
+    }
 }

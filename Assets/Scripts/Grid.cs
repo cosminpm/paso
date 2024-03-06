@@ -24,12 +24,16 @@ public class Grid : MonoBehaviour
     public HashSet<int[]> desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
-
-
+    private SoundManager _soundManager;
     private Astronaut _astronautScript;
     private Dictionary<CellType, List<GameObject>> _dictCellTypeListGameObjects;
 
     public Vector3 sizeOfCell;
+
+    private void Start()
+    {
+        _soundManager = GameObject.Find("GameController").GetComponent<SoundManager>();
+    }
 
     public void SetRandomLimiterPerlinNoise(float downLimiter, float upLimiter)
     {
@@ -218,7 +222,6 @@ public class Grid : MonoBehaviour
 
     private bool DidPlayerFinishedWithDesiredPosition(int[] positionDesired)
     {
-        Debug.Log(desertArrIntHashSet.Count);
         if (desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] &&
             positionDesired[1] == _finalPosition[1])
             return true;
@@ -251,7 +254,7 @@ public class Grid : MonoBehaviour
             Cell cell = gridCell[startingPosition[0], startingPosition[1]].GetComponent<Cell>();
             _astronautScript.SetAllPositionAstronaut(startingPosition[0], startingPosition[1], cell.GetPosition());
             ConvertAllForestIntoDesert();
-
+            _soundManager.PlayLevelFailed();
             TransformIntoForest(startingPosition[0], startingPosition[1]);
             desertArrIntHashSet.Remove(startingPosition);
         }

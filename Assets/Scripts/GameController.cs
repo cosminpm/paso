@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour
     private List<int[]> _longestPathListCells;
     private FollowPlayerCamera _cameraController;
     private Astronaut _astronaut;
-    private AudioSource _audioSource;
+    private SoundManager _soundManager;
     
     
     private void Start()
@@ -30,11 +30,10 @@ public class GameController : MonoBehaviour
     {
         if (_grid.IsLevelFinished())
         {
-            Debug.Log("LEVEL FINISHED");
             _grid.SetRandomLimiterPerlinNoise(.5f, .75f);
             _grid.SetRandomScaler(2f, 10f);
             _grid.SetRandomColumnsAndRows(3,7);
-            _audioSource.Play();
+            _soundManager.PlayLevelCompleted();
             DestroyLevel();
             CreateLevel();
         }
@@ -46,7 +45,7 @@ public class GameController : MonoBehaviour
         _longestPath = GameObject.Find("Grid").GetComponent<LongestPath>();
         _cameraController = GameObject.Find("Main Camera").GetComponent<FollowPlayerCamera>();
         _grid.InstantiateDictionaryCellType();
-        _audioSource  = GetComponent<AudioSource>();
+        _soundManager  = GetComponent<SoundManager>();
     }
 
     private void CreateLevel()
