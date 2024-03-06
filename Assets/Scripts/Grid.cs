@@ -24,7 +24,8 @@ public class Grid : MonoBehaviour
     public HashSet<int[]> desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
-    private SoundManager _soundManager;
+    public SoundManager soundManager;
+    public GameController gameController;
     public AstronautController astronautController;
     private Dictionary<CellType, List<GameObject>> _dictCellTypeListGameObjects;
 
@@ -54,10 +55,7 @@ public class Grid : MonoBehaviour
         Forest,
         Final
     }
-
     
-
-
     private T GetRandomFromList<T>(List<T> objects)
     {
         int n = Random.Range(0, objects.Count);
@@ -238,6 +236,7 @@ public class Grid : MonoBehaviour
             TransformIntoForest(positionDesired[0], positionDesired[1]);
             desertArrIntHashSet.Remove(positionDesired);
         }
+        // User failed
         else if (positionDesired[0] != -5 && positionDesired[1] != -5 &&
                  (poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
                  positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
@@ -245,9 +244,10 @@ public class Grid : MonoBehaviour
             Cell cell = gridCell[startingPosition[0], startingPosition[1]].GetComponent<Cell>();
             astronautController.SetAllPositionAstronaut(startingPosition[0], startingPosition[1], cell.GetPosition());
             ConvertAllForestIntoDesert();
-            _soundManager.PlayLevelFailed();
+            soundManager.PlayLevelFailed();
             TransformIntoForest(startingPosition[0], startingPosition[1]);
             desertArrIntHashSet.Remove(startingPosition);
+            gameController.ReduceScore();
         }
     }
 

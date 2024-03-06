@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
@@ -17,7 +18,16 @@ public class GameController : MonoBehaviour
     private int _numberOfLevels = 1;
     private TextMeshProUGUI _numberOfLevelsTextMeshProIn;
     private TextMeshProUGUI _numberOfLevelsTextMeshProOut;
+    private TextMeshProUGUI _timerText;
+    private TextMeshProUGUI _scoreText;
+    
+    public bool playing = true;
+    private float _currentTimer;
+    private int _hours, _minutes, _seconds; 
+    private int _score;
+    private float _startLevelTimer;
 
+    private int _userLives = 0;
     
     private void Start()
     {
@@ -28,6 +38,33 @@ public class GameController : MonoBehaviour
     {
         CreateNewLevel();
         _grid.MoveAstronaut();
+        UpdateTimer();
+    }
+
+
+    private void UpdateTimer()
+    {
+        if(playing){
+            _currentTimer += Time.deltaTime;
+             _hours = Mathf.FloorToInt(_currentTimer / 3600F);
+             _minutes = Mathf.FloorToInt(_currentTimer / 60F);
+             _seconds = Mathf.FloorToInt(_currentTimer % 60F);
+            _timerText.text = _hours.ToString ("00") + ":" + _minutes.ToString ("00") + ":" + _seconds.ToString ("00");
+        }
+    }
+
+    private void _updateScore()
+    {
+        if (_numberOfLevels == 1)
+        {
+            _score = 0;
+        }
+        else
+        {
+            _score +=  Convert.ToInt32(_numberOfLevels * 50 / (_currentTimer - _startLevelTimer));
+        }
+        _scoreText.text = _score.ToString();
+
     }
 
     private void CreateNewLevel()
@@ -49,17 +86,21 @@ public class GameController : MonoBehaviour
     
     private void InitializeVariables()
     {
+        _soundManager = GetComponent<SoundManager>();
         _grid = GameObject.Find("Grid").GetComponent<Grid>();
         _longestPath = GameObject.Find("Grid").GetComponent<LongestPath>();
         _cameraController = GameObject.Find("Main Camera").GetComponent<FollowPlayerCamera>();
 
         _grid.astronautController = GameObject.Find("Astronaut").GetComponent<AstronautController>();
-        
+        _grid.soundManager = _soundManager;
         _grid.InstantiateDictionaryCellType();
         _soundManager  = GetComponent<SoundManager>();
         
         _numberOfLevelsTextMeshProIn = GameObject.Find("Canvas").transform.Find("NumberOfLevelsIn").GetComponent<TextMeshProUGUI>();
         _numberOfLevelsTextMeshProOut = GameObject.Find("Canvas").transform.Find("NumberOfLevelsOut").GetComponent<TextMeshProUGUI>();
+        _timerText = GameObject.Find("Canvas").transform.Find("TimerText").GetComponent<TextMeshProUGUI>();
+        _scoreText = GameObject.Find("Canvas").transform.Find("ScoreText").GetComponent<TextMeshProUGUI>();
+        _grid.gameController = this;
 
     }
 
@@ -67,7 +108,8 @@ public class GameController : MonoBehaviour
     {
         _grid.InstantiateGrid();
         _grid.InstantiateAstronaut();
-
+        _updateScore();
+        
         SetDFSSize();
         _longestPath.InitializeDFS();
 
@@ -78,6 +120,8 @@ public class GameController : MonoBehaviour
         
         _grid.CreateFinalCellPosition(_longestPathListCells.Last());
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
+        _startLevelTimer = _currentTimer;
+
     }
 
     private void DestroyLevel()
@@ -96,12 +140,8 @@ public class GameController : MonoBehaviour
     {
         HashSet<int[]> hashUsedInPath = new HashSet<int[]>(new IntArrayEqualityComparer());
         hashUsedInPath.AddRange(usedInPath);
-
-        // Find the difference between _grid.desertArrIntHashSet and hashUsedInPath
         IEnumerable<int[]> difference =
             _grid.desertArrIntHashSet.Except(hashUsedInPath, new IntArrayEqualityComparer());
-
-        // Convert the result to a list
         List<int[]> result = difference.ToList();
 
         foreach (var cell in result)
@@ -118,4 +158,20 @@ public class GameController : MonoBehaviour
             _longestPath.DrawDebugVisited(_longestPathListCells, _grid.gridCell);
         }
     }
+
+    public void ReduceScore()
+    {
+        _score -= 50;
+        if (_score < 0)
+        {
+            _score = 0;
+        }
+        _scoreText.text = _score.ToString();
+    }
+
+    public void DecreaseLive()
+    {
+        _userLives -= 1;
+    }
+    
 }
