@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -19,11 +20,14 @@ public class Grid : MonoBehaviour
     public GameObject[,] gridCell;
 
     public int[] startingPosition;
+    public int[] heart_position = {-1, -1};
+
     private int[] _finalPosition = new []{-1,-1};
 
     public HashSet<int[]> desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
+    public GameObject heartLife;
     public SoundManager soundManager;
     public GameController gameController;
     public AstronautController astronautController;
@@ -209,6 +213,25 @@ public class Grid : MonoBehaviour
     }
 
 
+    public void CreateHeart()
+    {
+        if (Random.Range(1, 4) == 1)
+        {
+            int r = Random.Range(1, desertArrIntHashSet.Count);
+            if (r < desertArrIntHashSet.Count)
+            {
+                heart_position = desertArrIntHashSet.ElementAt(r);
+                heartLife.transform.gameObject.SetActive(true);
+                heartLife.transform.position = new Vector3(heart_position[0], 0.5f, heart_position[1]);
+            }
+        }
+        else
+        {
+            heartLife.transform.gameObject.SetActive(false);
+            heart_position = new[] {-1, -1};
+        }
+    }
+    
     private bool DidPlayerFinishedWithDesiredPosition(int[] positionDesired)
     {
         if (desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] &&
@@ -235,7 +258,12 @@ public class Grid : MonoBehaviour
                 parent.GetComponent<Cell>().GetPosition());
             TransformIntoForest(positionDesired[0], positionDesired[1]);
             desertArrIntHashSet.Remove(positionDesired);
+
+
+            CheckIfMovementWithHeart(positionDesired);
+
         }
+        
         // User failed
         else if (positionDesired[0] != -5 && positionDesired[1] != -5 &&
                  (poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
@@ -248,9 +276,22 @@ public class Grid : MonoBehaviour
             TransformIntoForest(startingPosition[0], startingPosition[1]);
             desertArrIntHashSet.Remove(startingPosition);
             gameController.ReduceScore();
+            gameController.DecreaseLive();
         }
     }
 
+    void CheckIfMovementWithHeart(int[] positionDesired)
+    {
+        if (positionDesired[0] == heart_position[0] && positionDesired[1] == heart_position[1])
+        {
+            heartLife.transform.gameObject.SetActive(false);
+            heart_position = new[] {-1, -1};
+            gameController.IncreaseLive();
+            soundManager.PlayHeartPicked();
+        }
+    }
+    
+    
     private GameObject TransformTerrainIntoAnother(int x, int y, CellType cellType)
     {
         GameObject parent = gridCell[x, y];
@@ -277,6 +318,7 @@ public class Grid : MonoBehaviour
     {
         TransformTerrainIntoAnother(x, y, CellType.DesertPoison);
         poisonArrIntHashSet.Add(new[] {x, y});
+        
     }
 
     private void TransformIntoFinalCell(int x, int y)

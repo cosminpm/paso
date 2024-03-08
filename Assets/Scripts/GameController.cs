@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -22,12 +23,12 @@ public class GameController : MonoBehaviour
     private TextMeshProUGUI _scoreText;
     
     public bool playing = true;
-    private float _currentTimer;
-    private int _hours, _minutes, _seconds; 
-    private int _score;
-    private float _startLevelTimer;
+    private static float _currentTimer;
+    private static int _hours, _minutes, _seconds; 
+    private static int _score;
+    private static float _startLevelTimer;
 
-    private int _userLives = 0;
+    private int _userLives = 3;
     
     private void Start()
     {
@@ -49,10 +50,15 @@ public class GameController : MonoBehaviour
              _hours = Mathf.FloorToInt(_currentTimer / 3600F);
              _minutes = Mathf.FloorToInt(_currentTimer / 60F);
              _seconds = Mathf.FloorToInt(_currentTimer % 60F);
-            _timerText.text = _hours.ToString ("00") + ":" + _minutes.ToString ("00") + ":" + _seconds.ToString ("00");
+             _timerText.text = TimeToText();
         }
     }
 
+    private string TimeToText()
+    {
+        return _hours.ToString ("00") + ":" + _minutes.ToString ("00") + ":" + _seconds.ToString ("00");
+    }
+    
     private void _updateScore()
     {
         if (_numberOfLevels == 1)
@@ -101,6 +107,7 @@ public class GameController : MonoBehaviour
         _timerText = GameObject.Find("Canvas").transform.Find("TimerText").GetComponent<TextMeshProUGUI>();
         _scoreText = GameObject.Find("Canvas").transform.Find("ScoreText").GetComponent<TextMeshProUGUI>();
         _grid.gameController = this;
+        _grid.heartLife = GameObject.Find("HeartLife");
 
     }
 
@@ -117,10 +124,11 @@ public class GameController : MonoBehaviour
 
 
         TransformUnusedDesertIntoPoison(_longestPathListCells);
-        
         _grid.CreateFinalCellPosition(_longestPathListCells.Last());
+        
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
         _startLevelTimer = _currentTimer;
+        _grid.CreateHeart();
 
     }
 
@@ -170,8 +178,66 @@ public class GameController : MonoBehaviour
     }
 
     public void DecreaseLive()
+    
     {
+        Debug.Log(_userLives);
+        if (_userLives == 3)
+        {
+            GameObject.Find("Canvas").transform.Find("hearts").transform.Find("h3").transform.gameObject.SetActive(false);
+        }
+        else if (_userLives == 2)
+        {
+            GameObject.Find("Canvas").transform.Find("hearts").transform.Find("h2").transform.gameObject.SetActive(false);
+        }
+        else if (_userLives == 1)
+        {
+            GameObject.Find("Canvas").transform.Find("hearts").transform.Find("h1").transform.gameObject.SetActive(false);
+        }
+        else
+        {
+            SceneManager.LoadScene("You Died");
+            SaveDataBetweenLevels();
+
+        }
         _userLives -= 1;
+        
+        
+    }
+
+    private void SaveDataBetweenLevels()
+    {
+        
+        PlayerPrefs.SetInt("Score", _score);
+        PlayerPrefs.SetString("Time", TimeToText());
+        PlayerPrefs.SetInt("Level", _numberOfLevels);
     }
     
+    
+    public void IncreaseLive()
+    {
+        if (_userLives == 2)
+        {
+            GameObject.Find("Canvas").transform.Find("hearts").transform.Find("h3").transform.gameObject.SetActive(true);
+            _userLives += 1;
+
+        }
+        else if (_userLives == 1)
+        {
+            GameObject.Find("Canvas").transform.Find("hearts").transform.Find("h2").transform.gameObject.SetActive(true);
+            _userLives += 1;
+
+        }
+        else if (_userLives == 0)
+        {
+            GameObject.Find("Canvas").transform.Find("hearts").transform.Find("h1").transform.gameObject.SetActive(true);
+            _userLives += 1;
+
+        }
+        else
+        {
+            _score += 50;
+            _scoreText.text = _score.ToString();
+        }
+        
+    }
 }

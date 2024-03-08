@@ -5,6 +5,7 @@ public class SoundManager : MonoBehaviour
     private AudioSource _audioSource;
     public AudioClip levelCompletedSound;
     public AudioClip failedLevelSound;
+    public AudioClip heartPickSound;
     public AudioClip backgroundMusic;
 
     private void Start()
@@ -23,5 +24,10 @@ public class SoundManager : MonoBehaviour
     public void PlayLevelFailed()
     {
         _audioSource.PlayOneShot(failedLevelSound);
+    }
+    
+    public void PlayHeartPicked()
+    {
+        _audioSource.PlayOneShot(heartPickSound);
     }
 }
