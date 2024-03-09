@@ -27,7 +27,6 @@ public class FinishScene : MonoBehaviour
         _timerText.text = PlayerPrefs.GetString("Time");
         _numberOfLevelsTextMeshProOut.text = PlayerPrefs.GetInt("Level").ToString();
         _numberOfLevelsTextMeshProIn.text = PlayerPrefs.GetInt("Level").ToString();
-
     }
     
 

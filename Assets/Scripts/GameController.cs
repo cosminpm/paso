@@ -206,7 +206,6 @@ public class GameController : MonoBehaviour
 
     private void SaveDataBetweenLevels()
     {
-        
         PlayerPrefs.SetInt("Score", _score);
         PlayerPrefs.SetString("Time", TimeToText());
         PlayerPrefs.SetInt("Level", _numberOfLevels);
