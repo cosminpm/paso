@@ -67,7 +67,12 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            _score +=  Convert.ToInt32(_numberOfLevels * 50 / (_currentTimer - _startLevelTimer));
+            float divider = _currentTimer - _startLevelTimer;
+            if (divider < 1)
+            {
+                divider = 1;
+            }
+            _score +=  Convert.ToInt32(_numberOfLevels * 50 /divider);
         }
         _scoreText.text = _score.ToString();
 
@@ -158,14 +163,7 @@ public class GameController : MonoBehaviour
             _grid.desertArrIntHashSet.Remove(cell);
         }
     }
-
-    private void OnDrawGizmos()
-    {
-        if (drawGizmos)
-        {
-            _longestPath.DrawDebugVisited(_longestPathListCells, _grid.gridCell);
-        }
-    }
+    
 
     public void ReduceScore()
     {

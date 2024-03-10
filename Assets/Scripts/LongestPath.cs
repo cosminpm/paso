@@ -99,14 +99,4 @@ public class LongestPath : MonoBehaviour
         }
         return neighbors;
     }
-
-
-    public void DrawDebugVisited(List<int[]> longestPath, GameObject[,] grid)
-    {
-        for (int i = 0; i < longestPath.Count; i++)
-        {
-            Gizmos.DrawWireCube(grid[longestPath[i][0],longestPath[i][1]].transform.position,new Vector3(.5f,.5f,.5f));
-            Handles.Label(grid[longestPath[i][0],longestPath[i][1]].transform.position, i.ToString());
-        }
-    }
 }
