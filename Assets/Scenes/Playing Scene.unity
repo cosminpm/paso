@@ -9334,6 +9334,8 @@ MonoBehaviour:
   - {fileID: 1217813119983272715, guid: ffaedf81f05d3174099a16560dd2f1d3, type: 3}
   finalGameObjectList:
   - {fileID: 1217813119983272715, guid: ceb770b976fcd2f41b56283dc5ec4695, type: 3}
+  emptyGameObject: {fileID: 1217813119983272715, guid: 648b61c51f38ee9488d462c74e54ca73,
+    type: 3}
   startingPosition: 
   heart_position: ffffffffffffffff
   heartLife: {fileID: 0}

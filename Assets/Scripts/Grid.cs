@@ -317,7 +317,7 @@ public class Grid : MonoBehaviour
     }
     
     
-    private GameObject TransformTerrainIntoAnother(int x, int y, CellType cellType)
+    private void TransformTerrainIntoAnother(int x, int y, CellType cellType)
     {
         GameObject parent = gridCell[x, y];
         foreach (Transform child in parent.transform)
@@ -330,7 +330,6 @@ public class Grid : MonoBehaviour
 
         GameObject cellGameObject = Instantiate(go, parent.transform.position, Quaternion.identity, parent.transform);
         cellGameObject.transform.parent = parent.transform;
-        return parent;
     }
 
     private void TransformIntoForest(int x, int y)
