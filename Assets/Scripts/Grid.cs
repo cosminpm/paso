@@ -16,6 +16,7 @@ public class Grid : MonoBehaviour
     public List<GameObject> poisonDesertGameObjectList;
     public List<GameObject> forestGameObjectList;
     public List<GameObject> finalGameObjectList;
+    public GameObject emptyGameObject;
 
     public GameObject[,] gridCell;
 
@@ -27,6 +28,9 @@ public class Grid : MonoBehaviour
     public HashSet<int[]> desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
+    public HashSet<int[]> emptyArrIntsHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
+    
+    
     public GameObject heartLife;
     public SoundManager soundManager;
     public GameController gameController;
@@ -57,7 +61,8 @@ public class Grid : MonoBehaviour
         Desert,
         DesertPoison,
         Forest,
-        Final
+        Final,
+        Empty,
     }
     
     private T GetRandomFromList<T>(List<T> objects)
@@ -80,13 +85,20 @@ public class Grid : MonoBehaviour
         }
     }
 
-
     private CellType CalculateTypeCell(int x, int y)
     {
         float val = Mathf.PerlinNoise((float) x / rows * scaler, (float) y / columns * scaler);
 
         if (val > limiterPerlinNoise)
-            return CellType.DesertPoison;
+        {
+            if( Random.Range(0, 2) == 1)
+                return CellType.DesertPoison;
+            return CellType.Empty;
+        }
+        
+        if (val <= limiterPerlinNoise)
+            return CellType.Desert;
+        Debug.Log("ERROR: val has not correct value");
         return CellType.Desert;
     }
 
@@ -94,8 +106,10 @@ public class Grid : MonoBehaviour
     {
         if (cellType == CellType.Desert)
             return GetRandomFromList(desertGameObjectList);
-        else if (cellType == CellType.DesertPoison)
+        if (cellType == CellType.DesertPoison)
             return GetRandomFromList(poisonDesertGameObjectList);
+        if (cellType == CellType.Empty)
+            return emptyGameObject; 
         return null;
     }
 
@@ -124,6 +138,7 @@ public class Grid : MonoBehaviour
             {
                 Vector3 cellPosition = new Vector3(i * cellSize.x, 0, j * cellSize.z);
                 CellType ct = CalculateTypeCell(i, j);
+                
                 GameObject parent = new GameObject();
                 parent.transform.position = cellPosition;
                 parent.name = $"Parent ({i}, {j})";
@@ -139,6 +154,14 @@ public class Grid : MonoBehaviour
 
                 if (ct == CellType.DesertPoison)
                     poisonArrIntHashSet.Add(new[] {i, j});
+                if (ct == CellType.Empty)
+                {
+                    emptyArrIntsHashSet.Add(new[] {i, j});
+                    // Needs to be added so the Find longest path does not use this cell
+                    poisonArrIntHashSet.Add(new[] {i, j});
+
+                }
+
                 else
                 {
                     desertArrIntHashSet.Add(new[] {i, j});
@@ -176,7 +199,9 @@ public class Grid : MonoBehaviour
         if (position[0] >= rows
             || position[1] >= columns
             || position[0] < 0
-            || position[1] < 0)
+            || position[1] < 0
+            || emptyArrIntsHashSet.Contains(new []{position[0], position[1]})
+            )
             return false;
         return true;
     }
@@ -265,7 +290,7 @@ public class Grid : MonoBehaviour
         }
         
         // User failed
-        else if (positionDesired[0] != -5 && positionDesired[1] != -5 &&
+        else if (IsPositionIsInsideGrid(positionDesired) && positionDesired[0] != -5 && positionDesired[1] != -5 &&
                  (poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
                  positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
         {
@@ -353,6 +378,7 @@ public class Grid : MonoBehaviour
         desertArrIntHashSet.Clear();
         poisonArrIntHashSet.Clear();
         _forestArrIntHashSet.Clear();
+        emptyArrIntsHashSet.Clear();
     }
 
     public void DestroyAllChildren()
