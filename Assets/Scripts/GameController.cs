@@ -84,15 +84,21 @@ public class GameController : MonoBehaviour
         {
             _grid.SetRandomLimiterPerlinNoise(.5f, .75f);
             _grid.SetRandomScaler(2f, 10f);
-            _grid.SetRandomColumnsAndRows(3,7);
+            _grid.SetRandomColumnsAndRows(3,6);
+            
             _soundManager.PlayLevelCompleted();
-            _numberOfLevels += 1;
-            _numberOfLevelsTextMeshProIn.text = _numberOfLevels.ToString();
-            _numberOfLevelsTextMeshProOut.text = _numberOfLevels.ToString();
-
+            UpdateUI();
+            
             DestroyLevel();
             CreateLevel();
         }
+    }
+
+    private void UpdateUI()
+    {
+        _numberOfLevels += 1;
+        _numberOfLevelsTextMeshProIn.text = _numberOfLevels.ToString();
+        _numberOfLevelsTextMeshProOut.text = _numberOfLevels.ToString();
     }
     
     private void InitializeVariables()
@@ -122,21 +128,56 @@ public class GameController : MonoBehaviour
         _grid.InstantiateAstronaut();
         _updateScore();
         
-        SetDFSSize();
-        _longestPath.InitializeDFS();
-
-        _longestPathListCells = _longestPath.FindLongestPath(_grid.startingPosition, _grid.poisonArrIntHashSet);
-
-
-        TransformUnusedDesertIntoPoison(_longestPathListCells);
-        _grid.CreateFinalCellPosition(_longestPathListCells.Last());
+        //CreateStepAllLevel();
+        CreateMaximizeLevel();
         
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
         _startLevelTimer = _currentTimer;
         _grid.CreateHeart();
+    }
+    
+    
 
+    private void CreateStepAllLevel()
+    {
+        SetDFSSize();
+        _longestPath.InitializeDFS();
+        _longestPathListCells = _longestPath.FindLongestPath(_grid.startingPosition, _grid.poisonArrIntHashSet);
+        TransformUnusedDesertIntoPoison(_longestPathListCells);
+        _grid.CreateFinalCellPosition(_longestPathListCells.Last());
     }
 
+
+    private void CreateMaximizeLevel()
+    {
+        int[] endPos = GetFinalCellInMaximize();
+        _grid.CreateFinalCellPosition(endPos);
+    }
+
+    int[] GetFinalCellInMaximize()
+    {
+        int[] endPos = null;
+    
+        List<int[]> positionsEnd = new List<int[]>();
+        
+        positionsEnd.Add(new int[]{_grid.startingPosition[0] + 2, _grid.startingPosition[1]});
+        positionsEnd.Add(new int[]{_grid.startingPosition[0] - 2, _grid.startingPosition[1]});
+        positionsEnd.Add(new int[]{_grid.startingPosition[0], _grid.startingPosition[1] + 2});
+        positionsEnd.Add(new int[]{_grid.startingPosition[0], _grid.startingPosition[1] - 2});
+        
+        foreach (var pos in positionsEnd)
+        {
+            if (_grid.IsPositionIsInsideGrid(pos))
+            {
+                endPos = pos;
+                break;
+            }
+        }
+        return endPos;
+    }
+    
+    
+    
     private void DestroyLevel()
     {
         _grid.DestroyLevel();

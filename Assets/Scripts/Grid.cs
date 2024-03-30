@@ -194,7 +194,7 @@ public class Grid : MonoBehaviour
         astronautController.InstantiateAstronaut(cellStart.GetX(), cellStart.GetY(), cellStart.GetPosition());
     }
 
-    private bool IsPositionIsInsideGrid(int[] position)
+    public bool IsPositionIsInsideGrid(int[] position)
     {
         if (position[0] >= rows
             || position[1] >= columns
