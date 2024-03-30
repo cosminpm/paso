@@ -1,7 +1,8 @@
 ﻿namespace DefaultNamespace
 {
-    public class AllCellLevel
+    public class MaximizeCellLevel
     {
+        
         
     }
 }

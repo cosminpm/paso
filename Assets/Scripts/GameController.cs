@@ -10,9 +10,9 @@ public class GameController : MonoBehaviour
 {
     private LongestPath _longestPath;
     private Grid _grid;
+    private AllCellLevel _allCellLevel;
 
     public bool drawGizmos;
-    private List<int[]> _longestPathListCells;
     private FollowPlayerCamera _cameraController;
     
     private SoundManager _soundManager;
@@ -108,6 +108,8 @@ public class GameController : MonoBehaviour
         _longestPath = GameObject.Find("Grid").GetComponent<LongestPath>();
         _cameraController = GameObject.Find("Main Camera").GetComponent<FollowPlayerCamera>();
 
+        _allCellLevel = new AllCellLevel(_grid, _longestPath);
+        
         _grid.astronautController = GameObject.Find("Astronaut").GetComponent<AstronautController>();
         _grid.soundManager = _soundManager;
         _grid.InstantiateDictionaryCellType();
@@ -128,25 +130,13 @@ public class GameController : MonoBehaviour
         _grid.InstantiateAstronaut();
         _updateScore();
         
-        //CreateStepAllLevel();
-        CreateMaximizeLevel();
+        _allCellLevel.CreateStepAllLevel();
+        //CreateMaximizeLevel();
         
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
         _startLevelTimer = _currentTimer;
         _grid.CreateHeart();
     }
-    
-    
-
-    private void CreateStepAllLevel()
-    {
-        SetDFSSize();
-        _longestPath.InitializeDFS();
-        _longestPathListCells = _longestPath.FindLongestPath(_grid.startingPosition, _grid.poisonArrIntHashSet);
-        TransformUnusedDesertIntoPoison(_longestPathListCells);
-        _grid.CreateFinalCellPosition(_longestPathListCells.Last());
-    }
-
 
     private void CreateMaximizeLevel()
     {
@@ -181,28 +171,6 @@ public class GameController : MonoBehaviour
     private void DestroyLevel()
     {
         _grid.DestroyLevel();
-    }
-
-
-    private void SetDFSSize()
-    {
-        _longestPath.columns = _grid.columns;
-        _longestPath.rows = _grid.rows;
-    }
-
-    private void TransformUnusedDesertIntoPoison(List<int[]> usedInPath)
-    {
-        HashSet<int[]> hashUsedInPath = new HashSet<int[]>(new IntArrayEqualityComparer());
-        hashUsedInPath.AddRange(usedInPath);
-        IEnumerable<int[]> difference =
-            _grid.desertArrIntHashSet.Except(hashUsedInPath, new IntArrayEqualityComparer());
-        List<int[]> result = difference.ToList();
-
-        foreach (var cell in result)
-        {
-            _grid.TransformIntoPoison(cell[0], cell[1]);
-            _grid.desertArrIntHashSet.Remove(cell);
-        }
     }
     
 
