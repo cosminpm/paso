@@ -18,16 +18,18 @@ public class FinishScene : MonoBehaviour
 
     void LoadScore()
     {
-        _timerText = GameObject.Find("Canvas").transform.Find("All").transform.Find("TimerText").GetComponent<TextMeshProUGUI>();
-        _scoreText = GameObject.Find("Canvas").transform.Find("All").transform.Find("ScoreText").GetComponent<TextMeshProUGUI>();
-        _numberOfLevelsTextMeshProIn = GameObject.Find("Canvas").transform.Find("All").transform.Find("NumberOfLevelsIn").GetComponent<TextMeshProUGUI>();
-        _numberOfLevelsTextMeshProOut = GameObject.Find("Canvas").transform.Find("All").transform.Find("NumberOfLevelsOut").GetComponent<TextMeshProUGUI>();
+        _timerText = GameObject.Find("Canvas").transform.Find("All").transform.Find("TimerText")
+            .GetComponent<TextMeshProUGUI>();
+        _scoreText = GameObject.Find("Canvas").transform.Find("All").transform.Find("ScoreText")
+            .GetComponent<TextMeshProUGUI>();
+        _numberOfLevelsTextMeshProIn = GameObject.Find("Canvas").transform.Find("All").transform
+            .Find("NumberOfLevelsIn").GetComponent<TextMeshProUGUI>();
+        _numberOfLevelsTextMeshProOut = GameObject.Find("Canvas").transform.Find("All").transform
+            .Find("NumberOfLevelsOut").GetComponent<TextMeshProUGUI>();
 
         _scoreText.text = PlayerPrefs.GetInt("Score").ToString();
         _timerText.text = PlayerPrefs.GetString("Time");
         _numberOfLevelsTextMeshProOut.text = PlayerPrefs.GetInt("Level").ToString();
         _numberOfLevelsTextMeshProIn.text = PlayerPrefs.GetInt("Level").ToString();
     }
-    
-
 }

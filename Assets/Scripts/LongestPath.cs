@@ -25,7 +25,8 @@ public class LongestPath : MonoBehaviour
         }
     }
 
-    public List<int[]> FindLongestPath(int[] startPosition, HashSet<int[]> posisonCells) {
+    public List<int[]> FindLongestPath(int[] startPosition, HashSet<int[]> posisonCells)
+    {
         List<int[]> longestPath = new List<int[]>();
         HashSet<int[]> visited = new HashSet<int[]>(new IntArrayEqualityComparer());
         List<int[]> currentPath = new List<int[]>();
@@ -33,30 +34,35 @@ public class LongestPath : MonoBehaviour
         return longestPath;
     }
 
-    private void FindLongestPathHelper(int[] currentPosition, HashSet<int[]> visited, 
-        List<int[]> currentPath, HashSet<int[]> poisonCells,  ref List<int[]> longestPath) {
-        
+    private void FindLongestPathHelper(int[] currentPosition, HashSet<int[]> visited,
+        List<int[]> currentPath, HashSet<int[]> poisonCells, ref List<int[]> longestPath)
+    {
         visited.Add(currentPosition);
         currentPath.Add(currentPosition);
 
         List<int[]> possibleMoves = GetNeighbors(currentPosition, poisonCells);
         List<int[]> validMoves = new List<int[]>();
-        foreach (int[] move in possibleMoves) {
-            if (!visited.Contains(move) && !poisonCells.Contains(move)) {
+        foreach (int[] move in possibleMoves)
+        {
+            if (!visited.Contains(move) && !poisonCells.Contains(move))
+            {
                 validMoves.Add(move);
             }
         }
 
-        if (validMoves.Count == 0 ) {
+        if (validMoves.Count == 0)
+        {
             if (currentPath.Count > longestPath.Count)
             {
                 longestPath.Clear();
                 for (int i = 0; i < currentPath.Count; i++)
-                    longestPath.Add(new []{currentPath[i][0],currentPath[i][1]});
-                
+                    longestPath.Add(new[] {currentPath[i][0], currentPath[i][1]});
             }
-        } else {
-            foreach (int[] move in validMoves) {
+        }
+        else
+        {
+            foreach (int[] move in validMoves)
+            {
                 FindLongestPathHelper(move, visited, currentPath, poisonCells, ref longestPath);
             }
         }
@@ -64,6 +70,7 @@ public class LongestPath : MonoBehaviour
         visited.Remove(currentPosition);
         currentPath.RemoveAt(currentPath.Count - 1);
     }
+
     private bool CheckCellGoodNeighbour(int[] cell, HashSet<int[]> posionCells)
     {
         if (cell[0] >= 0 &&
@@ -97,6 +104,7 @@ public class LongestPath : MonoBehaviour
         {
             neighbors.Add(new[] {cell[0], cell[1] + 1});
         }
+
         return neighbors;
     }
 }

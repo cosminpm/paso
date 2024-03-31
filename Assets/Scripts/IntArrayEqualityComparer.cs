@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+
 public class IntArrayEqualityComparer : IEqualityComparer<int[]>
 {
     public bool Equals(int[] x, int[] y)

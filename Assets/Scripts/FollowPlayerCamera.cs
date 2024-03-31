@@ -6,7 +6,7 @@ public class FollowPlayerCamera : MonoBehaviour
 {
     private Camera _camera;
     public float distanceFromGround;
-    
+
 
     private void GetCamera()
     {
@@ -23,13 +23,12 @@ public class FollowPlayerCamera : MonoBehaviour
     {
         float middleRows = rows * sizeSquare / 2.0f;
         float middleColums = columns * sizeSquare / 2.0f;
-        return new Vector3(middleRows, distanceFromGround, middleColums); 
+        return new Vector3(middleRows, distanceFromGround, middleColums);
     }
-    
+
     public void SetCameraMiddleMap(int rows, int columns, float sizeSquare)
     {
         Vector3 center = CalculateMiddleMap(rows, columns, sizeSquare);
         transform.position = center;
     }
-    
 }

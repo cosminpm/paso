@@ -39,7 +39,7 @@ public class Testing : MonoBehaviour
                 cubes[x, y] = cube;
             }
         }
-        
+
         // Update colors after generating the grid
         UpdateGridColor();
     }
@@ -82,7 +82,7 @@ public class Testing : MonoBehaviour
 
     private int CalculateTypeCell(int x, int y)
     {
-        float val = Mathf.PerlinNoise((float)x / rows * scaler, (float)y / columns * scaler);
+        float val = Mathf.PerlinNoise((float) x / rows * scaler, (float) y / columns * scaler);
 
         if (val > limiterPerlinNoise)
             return 1;

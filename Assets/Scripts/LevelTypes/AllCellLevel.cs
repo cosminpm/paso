@@ -13,7 +13,14 @@ public class AllCellLevel : LevelCell
     {
         _longestPath = longestPath;
     }
-    
+
+    public override void GridSpecificLevel()
+    {
+        grid.SetRandomLimiterPerlinNoise(.5f, .75f);
+        grid.SetRandomScaler(2f, 10f);
+        grid.SetRandomColumnsAndRows(3, 6);
+    }
+
     public override void CreateLevelSpecific()
     {
         SetDFSSize();

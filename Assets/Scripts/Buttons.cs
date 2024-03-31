@@ -7,14 +7,13 @@ public class Buttons : MonoBehaviour
     {
         Application.Quit();
     }
-    
+
     public void PlayAgain()
     {
-        SceneManager.LoadScene("Playing Scene");    
+        SceneManager.LoadScene("Playing Scene");
 
         PlayerPrefs.SetInt("Score", 0);
         PlayerPrefs.SetString("Time", "0");
         PlayerPrefs.SetInt("Level", 0);
-        
     }
 }

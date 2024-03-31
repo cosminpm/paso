@@ -3,16 +3,17 @@
     public abstract class LevelCell
     {
         public Grid grid;
-        
-        
+
+
         public LevelCell(Grid grid)
         {
             this.grid = grid;
         }
-        
-        
+
+
         public void CreateLevel()
         {
+            GridSpecificLevel();
             grid.InstantiateGrid();
             grid.InstantiateAstronaut();
             CreateLevelSpecific();
@@ -21,5 +22,6 @@
 
 
         public abstract void CreateLevelSpecific();
+        public abstract void GridSpecificLevel();
     }
 }

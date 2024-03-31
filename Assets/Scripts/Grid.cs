@@ -23,14 +23,14 @@ public class Grid : MonoBehaviour
     public int[] startingPosition;
     public int[] heart_position = {-1, -1};
 
-    private int[] _finalPosition = new []{-1,-1};
+    private int[] _finalPosition = new[] {-1, -1};
 
     public HashSet<int[]> desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
     public HashSet<int[]> emptyArrIntsHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
-    
-    
+
+
     public GameObject heartLife;
     public SoundManager soundManager;
     public GameController gameController;
@@ -44,6 +44,7 @@ public class Grid : MonoBehaviour
         float randomValue = Random.Range(downLimiter, upLimiter);
         limiterPerlinNoise = randomValue;
     }
+
     public void SetRandomScaler(float downLimiter, float upLimiter)
     {
         float randomValue = Random.Range(downLimiter, upLimiter);
@@ -55,7 +56,7 @@ public class Grid : MonoBehaviour
         columns = Random.Range(downLimiter, upLimiter);
         rows = Random.Range(downLimiter, upLimiter);
     }
-    
+
     public enum CellType
     {
         Desert,
@@ -64,7 +65,7 @@ public class Grid : MonoBehaviour
         Final,
         Empty,
     }
-    
+
     private T GetRandomFromList<T>(List<T> objects)
     {
         int n = Random.Range(0, objects.Count);
@@ -91,11 +92,11 @@ public class Grid : MonoBehaviour
 
         if (val > limiterPerlinNoise)
         {
-            if( Random.Range(0, 2) == 1)
+            if (Random.Range(0, 2) == 1)
                 return CellType.DesertPoison;
             return CellType.Empty;
         }
-        
+
         if (val <= limiterPerlinNoise)
             return CellType.Desert;
         Debug.Log("ERROR: val has not correct value");
@@ -109,7 +110,7 @@ public class Grid : MonoBehaviour
         if (cellType == CellType.DesertPoison)
             return GetRandomFromList(poisonDesertGameObjectList);
         if (cellType == CellType.Empty)
-            return emptyGameObject; 
+            return emptyGameObject;
         return null;
     }
 
@@ -138,7 +139,7 @@ public class Grid : MonoBehaviour
             {
                 Vector3 cellPosition = new Vector3(i * cellSize.x, 0, j * cellSize.z);
                 CellType ct = CalculateTypeCell(i, j);
-                
+
                 GameObject parent = new GameObject();
                 parent.transform.position = cellPosition;
                 parent.name = $"Parent ({i}, {j})";
@@ -159,7 +160,6 @@ public class Grid : MonoBehaviour
                     emptyArrIntsHashSet.Add(new[] {i, j});
                     // Needs to be added so the Find longest path does not use this cell
                     poisonArrIntHashSet.Add(new[] {i, j});
-
                 }
 
                 else
@@ -200,8 +200,8 @@ public class Grid : MonoBehaviour
             || position[1] >= columns
             || position[0] < 0
             || position[1] < 0
-            || emptyArrIntsHashSet.Contains(new []{position[0], position[1]})
-            )
+            || emptyArrIntsHashSet.Contains(new[] {position[0], position[1]})
+        )
             return false;
         return true;
     }
@@ -256,7 +256,7 @@ public class Grid : MonoBehaviour
             heart_position = new[] {-1, -1};
         }
     }
-    
+
     private bool DidPlayerFinishedWithDesiredPosition(int[] positionDesired)
     {
         if (desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] &&
@@ -286,9 +286,8 @@ public class Grid : MonoBehaviour
 
 
             CheckIfMovementWithHeart(positionDesired);
-
         }
-        
+
         // User failed
         else if (IsPositionIsInsideGrid(positionDesired) && positionDesired[0] != -5 && positionDesired[1] != -5 &&
                  (poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
@@ -315,14 +314,14 @@ public class Grid : MonoBehaviour
             soundManager.PlayHeartPicked();
         }
     }
-    
-    
+
+
     private void TransformTerrainIntoAnother(int x, int y, CellType cellType)
     {
         GameObject parent = gridCell[x, y];
         foreach (Transform child in parent.transform)
         {
-            // Destroy the child GameObject
+            // Destroy the child GameObjectf
             Destroy(child.gameObject);
         }
 
@@ -342,7 +341,6 @@ public class Grid : MonoBehaviour
     {
         TransformTerrainIntoAnother(x, y, CellType.DesertPoison);
         poisonArrIntHashSet.Add(new[] {x, y});
-        
     }
 
     private void TransformIntoFinalCell(int x, int y)
