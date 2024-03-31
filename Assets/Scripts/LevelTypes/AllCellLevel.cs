@@ -1,33 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace.LevelTypes;
 using Unity.VisualScripting;
 
-public class AllCellLevel
+public class AllCellLevel : LevelCell
 {
     private LongestPath _longestPath;
-    private Grid _grid;
     private List<int[]> _longestPathListCells;
 
 
-    public AllCellLevel(Grid grid, LongestPath longestPath)
+    public AllCellLevel(Grid grid, LongestPath longestPath) : base(grid)
     {
-        _grid = grid;
         _longestPath = longestPath;
     }
     
-    public void CreateStepAllLevel()
+    public override void CreateLevelSpecific()
     {
         SetDFSSize();
         _longestPath.InitializeDFS();
-        _longestPathListCells = _longestPath.FindLongestPath(_grid.startingPosition, _grid.poisonArrIntHashSet);
+        _longestPathListCells = _longestPath.FindLongestPath(grid.startingPosition, grid.poisonArrIntHashSet);
         TransformUnusedDesertIntoPoison(_longestPathListCells);
-        _grid.CreateFinalCellPosition(_longestPathListCells.Last());
+        grid.CreateFinalCellPosition(_longestPathListCells.Last());
     }
     
     private void SetDFSSize()
     {
-        _longestPath.columns = _grid.columns;
-        _longestPath.rows = _grid.rows;
+        _longestPath.columns = grid.columns;
+        _longestPath.rows = grid.rows;
     }
     
     private void TransformUnusedDesertIntoPoison(List<int[]> usedInPath)
@@ -35,13 +34,13 @@ public class AllCellLevel
         HashSet<int[]> hashUsedInPath = new HashSet<int[]>(new IntArrayEqualityComparer());
         hashUsedInPath.AddRange(usedInPath);
         IEnumerable<int[]> difference =
-            _grid.desertArrIntHashSet.Except(hashUsedInPath, new IntArrayEqualityComparer());
+            grid.desertArrIntHashSet.Except(hashUsedInPath, new IntArrayEqualityComparer());
         List<int[]> result = difference.ToList();
 
         foreach (var cell in result)
         {
-            _grid.TransformIntoPoison(cell[0], cell[1]);
-            _grid.desertArrIntHashSet.Remove(cell);
+            grid.TransformIntoPoison(cell[0], cell[1]);
+            grid.desertArrIntHashSet.Remove(cell);
         }
     }
     

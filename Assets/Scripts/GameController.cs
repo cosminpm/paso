@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     private LongestPath _longestPath;
     private Grid _grid;
     private AllCellLevel _allCellLevel;
+    private MaximizeCellLevel _maximizeCellLevel;
 
     public bool drawGizmos;
     private FollowPlayerCamera _cameraController;
@@ -75,7 +76,6 @@ public class GameController : MonoBehaviour
             _score +=  Convert.ToInt32(_numberOfLevels * 50 /divider);
         }
         _scoreText.text = _score.ToString();
-
     }
 
     private void CreateNewLevel()
@@ -109,6 +109,7 @@ public class GameController : MonoBehaviour
         _cameraController = GameObject.Find("Main Camera").GetComponent<FollowPlayerCamera>();
 
         _allCellLevel = new AllCellLevel(_grid, _longestPath);
+        _maximizeCellLevel = new MaximizeCellLevel(_grid);
         
         _grid.astronautController = GameObject.Find("Astronaut").GetComponent<AstronautController>();
         _grid.soundManager = _soundManager;
@@ -126,46 +127,11 @@ public class GameController : MonoBehaviour
 
     private void CreateLevel()
     {
-        _grid.InstantiateGrid();
-        _grid.InstantiateAstronaut();
+        _allCellLevel.CreateLevel();
         _updateScore();
-        
-        _allCellLevel.CreateStepAllLevel();
-        //CreateMaximizeLevel();
-        
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
         _startLevelTimer = _currentTimer;
-        _grid.CreateHeart();
     }
-
-    private void CreateMaximizeLevel()
-    {
-        int[] endPos = GetFinalCellInMaximize();
-        _grid.CreateFinalCellPosition(endPos);
-    }
-
-    int[] GetFinalCellInMaximize()
-    {
-        int[] endPos = null;
-    
-        List<int[]> positionsEnd = new List<int[]>();
-        
-        positionsEnd.Add(new int[]{_grid.startingPosition[0] + 2, _grid.startingPosition[1]});
-        positionsEnd.Add(new int[]{_grid.startingPosition[0] - 2, _grid.startingPosition[1]});
-        positionsEnd.Add(new int[]{_grid.startingPosition[0], _grid.startingPosition[1] + 2});
-        positionsEnd.Add(new int[]{_grid.startingPosition[0], _grid.startingPosition[1] - 2});
-        
-        foreach (var pos in positionsEnd)
-        {
-            if (_grid.IsPositionIsInsideGrid(pos))
-            {
-                endPos = pos;
-                break;
-            }
-        }
-        return endPos;
-    }
-    
     
     
     private void DestroyLevel()
