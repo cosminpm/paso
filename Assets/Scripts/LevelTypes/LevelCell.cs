@@ -23,5 +23,7 @@
 
         public abstract void CreateLevelSpecific();
         public abstract void GridSpecificLevel();
+
+        public abstract bool EndCondition();
     }
 }

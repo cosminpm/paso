@@ -21,6 +21,11 @@ public class AllCellLevel : LevelCell
         grid.SetRandomColumnsAndRows(3, 6);
     }
 
+    public override bool EndCondition()
+    {
+        return grid.desertArrIntHashSet.Count == 0;
+    }
+
     public override void CreateLevelSpecific()
     {
         SetDFSSize();

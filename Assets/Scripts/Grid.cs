@@ -20,7 +20,7 @@ public class Grid : MonoBehaviour
 
     public GameObject[,] gridCell;
 
-    public int[] startingPosition;
+    public int[] startingPosition ;
     public int[] heart_position = {-1, -1};
 
     private int[] _finalPosition = new[] {-1, -1};
@@ -37,6 +37,8 @@ public class Grid : MonoBehaviour
     public AstronautController astronautController;
     private Dictionary<CellType, List<GameObject>> _dictCellTypeListGameObjects;
 
+    private Func<bool> _endCondition;
+
     public Vector3 sizeOfCell;
 
     public void SetRandomLimiterPerlinNoise(float downLimiter, float upLimiter)
@@ -49,6 +51,11 @@ public class Grid : MonoBehaviour
     {
         float randomValue = Random.Range(downLimiter, upLimiter);
         scaler = randomValue;
+    }
+
+    public void SetEndCondition(Func<bool> endCondition)
+    {
+        _endCondition = endCondition;
     }
 
     public void SetRandomColumnsAndRows(int downLimiter, int upLimiter)
@@ -194,16 +201,25 @@ public class Grid : MonoBehaviour
         astronautController.InstantiateAstronaut(cellStart.GetX(), cellStart.GetY(), cellStart.GetPosition());
     }
 
-    public bool IsPositionIsInsideGrid(int[] position)
+    public bool IsPositionAvailable(int[] position)
     {
-        if (position[0] >= rows
-            || position[1] >= columns
-            || position[0] < 0
-            || position[1] < 0
+        if (!IsPositionInsideGrid(position)
             || emptyArrIntsHashSet.Contains(new[] {position[0], position[1]})
         )
             return false;
         return true;
+    }
+
+    public bool IsPositionInsideGrid(int[] position)
+    {
+        if (position[0] < rows
+            && position[1] < columns
+            && position[0] >= 0
+            && position[1] >= 0)
+        {
+            return true;
+        }
+        return false;
     }
 
     private int[] GetPositionDesiredAndRotate()
@@ -259,18 +275,19 @@ public class Grid : MonoBehaviour
 
     private bool DidPlayerFinishedWithDesiredPosition(int[] positionDesired)
     {
-        if (desertArrIntHashSet.Count == 0 && positionDesired[0] == _finalPosition[0] &&
+        if (_endCondition() && positionDesired[0] == _finalPosition[0] &&
             positionDesired[1] == _finalPosition[1])
             return true;
         return false;
     }
+
 
     public void MoveAstronaut()
     {
         int[] positionDesired = GetPositionDesiredAndRotate();
 
         // Check if position is a position inside the grid
-        if (IsPositionIsInsideGrid(positionDesired) &&
+        if (IsPositionAvailable(positionDesired) &&
             !poisonArrIntHashSet.Contains(positionDesired) &&
             !_forestArrIntHashSet.Contains(positionDesired) &&
             !(positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
@@ -283,13 +300,11 @@ public class Grid : MonoBehaviour
                 parent.GetComponent<Cell>().GetPosition());
             TransformIntoForest(positionDesired[0], positionDesired[1]);
             desertArrIntHashSet.Remove(positionDesired);
-
-
             CheckIfMovementWithHeart(positionDesired);
         }
 
         // User failed
-        else if (IsPositionIsInsideGrid(positionDesired) && positionDesired[0] != -5 && positionDesired[1] != -5 &&
+        else if (IsPositionAvailable(positionDesired) && positionDesired[0] != -5 && positionDesired[1] != -5 &&
                  (poisonArrIntHashSet.Contains(positionDesired) || _forestArrIntHashSet.Contains(positionDesired)) ||
                  positionDesired[0] == _finalPosition[0] && positionDesired[1] == _finalPosition[1])
         {
@@ -348,7 +363,7 @@ public class Grid : MonoBehaviour
         TransformTerrainIntoAnother(x, y, CellType.Final);
     }
 
-    private void TransformIntoDesert(int x, int y)
+    public void TransformIntoDesert(int x, int y)
     {
         TransformTerrainIntoAnother(x, y, CellType.Desert);
         desertArrIntHashSet.Add(new[] {x, y});

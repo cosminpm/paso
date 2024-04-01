@@ -98,7 +98,10 @@ public class GameController : MonoBehaviour
 
         _allCellLevel = new AllCellLevel(_grid, _longestPath);
         _maximizeCellLevel = new MaximizeCellLevel(_grid);
-
+        
+        // TODO: Change here depeding on level type
+        _grid.SetEndCondition(_maximizeCellLevel.EndCondition);
+        
         _grid.astronautController = GameObject.Find("Astronaut").GetComponent<AstronautController>();
         _grid.soundManager = _soundManager;
         _grid.InstantiateDictionaryCellType();
@@ -129,7 +132,7 @@ public class GameController : MonoBehaviour
 
     private void CreateLevel()
     {
-        _allCellLevel.CreateLevel();
+        _maximizeCellLevel.CreateLevel();
         _updateScore();
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
         _startLevelTimer = _currentTimer;
