@@ -16,6 +16,9 @@ public class Grid : MonoBehaviour
     public List<GameObject> poisonDesertGameObjectList;
     public List<GameObject> forestGameObjectList;
     public List<GameObject> finalGameObjectList;
+    
+    
+    
     public GameObject emptyGameObject;
 
     public GameObject[,] gridCell;
@@ -106,7 +109,7 @@ public class Grid : MonoBehaviour
 
         if (val <= limiterPerlinNoise)
             return CellType.Desert;
-        Debug.Log("ERROR: val has not correct value");
+        Debug.LogError("ERROR: val has not correct value");
         return CellType.Desert;
     }
 

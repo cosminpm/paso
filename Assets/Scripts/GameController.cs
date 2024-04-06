@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DefaultNamespace.LevelTypes;
 using TMPro;
-using Unity.VisualScripting;
+using Random = UnityEngine.Random;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,12 +30,13 @@ public class GameController : MonoBehaviour
     private static int _score;
     private static float _startLevelTimer;
 
+    private List<LevelCell> _typeLevels;
     private int _userLives = 3;
 
     private void Start()
     {
         InitializeVariables();
-        CreateLevel();
+        CreateLevel(_allCellLevel);
     }
 
     private void Update()
@@ -91,6 +93,7 @@ public class GameController : MonoBehaviour
 
     private void InitializeVariables()
     {
+        
         _soundManager = GetComponent<SoundManager>();
         _grid = GameObject.Find("Grid").GetComponent<Grid>();
         _longestPath = GameObject.Find("Grid").GetComponent<LongestPath>();
@@ -98,9 +101,11 @@ public class GameController : MonoBehaviour
 
         _allCellLevel = new AllCellLevel(_grid, _longestPath);
         _maximizeCellLevel = new MaximizeCellLevel(_grid);
+
+        _typeLevels = new List<LevelCell> {_allCellLevel, _maximizeCellLevel};
         
-        // TODO: Change here depeding on level type
-        _grid.SetEndCondition(_maximizeCellLevel.EndCondition);
+        // First level will be always a allCellLevel
+        _grid.SetEndCondition(_allCellLevel.EndCondition);
         
         _grid.astronautController = GameObject.Find("Astronaut").GetComponent<AstronautController>();
         _grid.soundManager = _soundManager;
@@ -124,26 +129,27 @@ public class GameController : MonoBehaviour
         {
             _soundManager.PlayLevelCompleted();
             UpdateUI();
-
-            DestroyLevel();
-            CreateLevel();
+            _grid.DestroyLevel();
+            CreateLevel(GetRandomLevelType());
         }
     }
 
-    private void CreateLevel()
+    private void CreateLevel(LevelCell typeLevel)
     {
-        _maximizeCellLevel.CreateLevel();
+        typeLevel.CreateLevel();
+        Debug.Log(typeLevel);
+        _grid.SetEndCondition(typeLevel.EndCondition);
+
         _updateScore();
         _cameraController.SetCameraMiddleMap(_grid.rows, _grid.columns, _grid.sizeOfCell.x);
         _startLevelTimer = _currentTimer;
     }
 
-
-    private void DestroyLevel()
+    private LevelCell GetRandomLevelType()
     {
-        _grid.DestroyLevel();
+        int randomIndex = Random.Range(0, _typeLevels.Count);
+        return _typeLevels[randomIndex];
     }
-
 
     public void ReduceScore()
     {
@@ -159,7 +165,6 @@ public class GameController : MonoBehaviour
     public void DecreaseLive()
 
     {
-        Debug.Log(_userLives);
         if (_userLives == 3)
         {
             GameObject.Find("Canvas").transform.Find("hearts").transform.Find("h3").transform.gameObject

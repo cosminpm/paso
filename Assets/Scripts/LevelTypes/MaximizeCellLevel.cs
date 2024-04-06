@@ -60,13 +60,9 @@ public class MaximizeCellLevel : LevelCell
         {
             for (int j = endPos[1] - 3; j < endPos[1] + 3; j++)
             {
-                Debug.Log("------");
-                Debug.Log(i + " " + j + " | "  + grid.startingPosition[0] + " " + grid.startingPosition[1] + " | " + (i != grid.startingPosition[0]) + " | " + (j != grid.startingPosition[1]));
-
-                Debug.Log(grid.poisonArrIntHashSet.Contains(new[] {i, j}));
                 if ((grid.emptyArrIntsHashSet.Contains(new[] {i, j}) || grid.poisonArrIntHashSet.Contains(new[] {i, j})) &&
                     !(i == grid.startingPosition[0] &&
-                    j == grid.startingPosition[1]) &&
+                      j == grid.startingPosition[1]) &&
                     !(i == endPos[0] &&
                       j == endPos[1]))
                 {
