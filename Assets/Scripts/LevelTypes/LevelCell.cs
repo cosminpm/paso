@@ -10,7 +10,6 @@
             this.grid = grid;
         }
 
-
         public void CreateLevel()
         {
             GridSpecificLevel();

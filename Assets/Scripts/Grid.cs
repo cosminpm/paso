@@ -7,8 +7,9 @@ using Random = UnityEngine.Random;
 
 public class Grid : MonoBehaviour
 {
-    public int rows;
-    public int columns;
+
+    [HideInInspector] public int rows;
+    [HideInInspector] public int columns;
     public float limiterPerlinNoise = 0.5f;
     public float scaler = 0.15f;
 
@@ -58,12 +59,6 @@ public class Grid : MonoBehaviour
     public void SetEndCondition(Func<bool> endCondition)
     {
         _endCondition = endCondition;
-    }
-
-    public void SetRandomColumnsAndRows(int downLimiter, int upLimiter)
-    {
-        columns = Random.Range(downLimiter, upLimiter);
-        rows = Random.Range(downLimiter, upLimiter);
     }
 
     public enum CellType
