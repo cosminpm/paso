@@ -11,7 +11,6 @@ public class LongestPath : MonoBehaviour
 
     public void InitializeDFS()
     {
-        // Initialize distances and visited arrays
         _distances = new int[rows, columns];
         _visited = new bool[rows, columns];
         for (int i = 0; i < rows; i++)

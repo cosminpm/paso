@@ -90,7 +90,6 @@ public class Grid : MonoBehaviour
             {
                 enumerator.MoveNext();
             }
-
             return enumerator.Current;
         }
     }
@@ -108,7 +107,6 @@ public class Grid : MonoBehaviour
 
         if (val <= limiterPerlinNoise)
             return CellType.Desert;
-        Debug.LogError("ERROR: val has not correct value");
         return CellType.Desert;
     }
 

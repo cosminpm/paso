@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DefaultNamespace.LevelTypes;
 using TMPro;
 using Random = UnityEngine.Random;
@@ -13,7 +12,6 @@ public class GameController : MonoBehaviour
     private Grid _grid;
     private AllCellLevel _allCellLevel;
 
-    public bool drawGizmos;
     private FollowPlayerCamera _cameraController;
 
     private SoundManager _soundManager;

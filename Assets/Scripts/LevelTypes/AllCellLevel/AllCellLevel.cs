@@ -17,7 +17,7 @@ public class AllCellLevel : LevelCell
     {
         grid.SetRandomLimiterPerlinNoise(.5f, .75f);
         grid.SetRandomScaler(2f, 10f);
-        grid.SetRandomColumnsAndRows(3, 6);
+        grid.SetRandomColumnsAndRows(3, 4);
     }
 
     public override bool EndCondition()
