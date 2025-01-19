@@ -8,7 +8,6 @@ public class AllCellLevel : LevelCell
     private LongestPath _longestPath;
     private List<int[]> _longestPathListCells;
 
-
     public AllCellLevel(Grid grid, LongestPath longestPath) : base(grid)
     {
         _longestPath = longestPath;

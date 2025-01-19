@@ -339,7 +339,6 @@ public class Grid : MonoBehaviour
         GameObject parent = gridCell[x, y];
         foreach (Transform child in parent.transform)
         {
-            // Destroy the child GameObjectf
             Destroy(child.gameObject);
         }
 

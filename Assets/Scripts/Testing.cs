@@ -28,14 +28,11 @@ public class Testing : MonoBehaviour
         {
             for (int y = 0; y < columns; y++)
             {
-                int cellType = CalculateTypeCell(x, y);
                 Vector3 position = new Vector3(x, 0, y);
-
                 GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 cube.transform.position = position;
-                cube.transform.localScale = new Vector3(1f, 1f, 1f); // Adjust scale as needed
+                cube.transform.localScale = new Vector3(1f, 1f, 1f); 
 
-                // Store the cube reference
                 cubes[x, y] = cube;
             }
         }

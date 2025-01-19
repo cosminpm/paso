@@ -5,19 +5,7 @@ public class FollowPlayerCamera : MonoBehaviour
 {
     private Camera _camera;
     public float distanceFromGround;
-
-
-    private void GetCamera()
-    {
-        _camera = GetComponent<Camera>();
-    }
-
-    public void SetCameraAboveAstronaut(Vector3 astronautPosition)
-    {
-        transform.position = new Vector3(astronautPosition.x, distanceFromGround, astronautPosition.z);
-    }
-
-
+    
     private Vector3 CalculateMiddleMap(float rows, float columns, float sizeSquare)
     {
         float middleRows = rows * sizeSquare / 2.0f;

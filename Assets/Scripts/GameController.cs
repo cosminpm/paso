@@ -102,7 +102,6 @@ public class GameController : MonoBehaviour
 
         _typeLevels = new List<LevelCell> {_allCellLevel};
         
-        // First level will be always a allCellLevel
         _grid.SetEndCondition(_allCellLevel.EndCondition);
         
         _grid.astronautController = GameObject.Find("Astronaut").GetComponent<AstronautController>();
@@ -122,8 +121,9 @@ public class GameController : MonoBehaviour
 
 
     private void CreateNewLevel()
-    {
-        if (_grid.IsLevelFinished())
+    {   
+        // TODO: Remove once the game is deployed
+        if (_grid.IsLevelFinished() || Input.GetKeyDown(KeyCode.N))
         {
             _soundManager.PlayLevelCompleted();
             UpdateUI();
@@ -135,7 +135,6 @@ public class GameController : MonoBehaviour
     private void CreateLevel(LevelCell typeLevel)
     {
         typeLevel.CreateLevel();
-        Debug.Log(typeLevel);
         _grid.SetEndCondition(typeLevel.EndCondition);
 
         _updateScore();
