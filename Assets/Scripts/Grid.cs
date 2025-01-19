@@ -125,7 +125,7 @@ public class Grid : MonoBehaviour
 
     public void InstantiateDictionaryCellType()
     {
-        _dictCellTypeListGameObjects = new Dictionary<CellType, List<GameObject>>()
+        _dictCellTypeListGameObjects = new Dictionary<CellType, List<GameObject>>
         {
             {CellType.Desert, desertGameObjectList},
             {CellType.Forest, forestGameObjectList},
@@ -160,7 +160,7 @@ public class Grid : MonoBehaviour
                 parent.transform.parent = GameObject.Find("Grid").transform;
 
                 parent.AddComponent<Cell>();
-                parent.GetComponent<Cell>().CreateCell(cellPosition, i, j, parent, ct);
+                parent.GetComponent<Cell>().CreateCell(cellPosition, i, j);
 
                 if (ct == CellType.DesertPoison)
                     poisonArrIntHashSet.Add(new[] {i, j});
