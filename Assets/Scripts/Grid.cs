@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class Grid : MonoBehaviour
@@ -17,21 +18,19 @@ public class Grid : MonoBehaviour
     public List<GameObject> forestGameObjectList;
     public List<GameObject> finalGameObjectList;
     
-    
-    
     public GameObject emptyGameObject;
 
     public GameObject[,] gridCell;
 
     public int[] startingPosition ;
-    public int[] heart_position = {-1, -1};
+    [FormerlySerializedAs("heart_position")] public int[] heartPosition = {-1, -1};
 
-    private int[] _finalPosition = new[] {-1, -1};
+    private int[] _finalPosition =  {-1, -1};
 
-    public HashSet<int[]> desertArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
-    public HashSet<int[]> poisonArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
-    private HashSet<int[]> _forestArrIntHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
-    public HashSet<int[]> emptyArrIntsHashSet = new HashSet<int[]>(new IntArrayEqualityComparer());
+    public HashSet<int[]> desertArrIntHashSet = new (new IntArrayEqualityComparer());
+    public HashSet<int[]> poisonArrIntHashSet = new (new IntArrayEqualityComparer());
+    private HashSet<int[]> _forestArrIntHashSet = new (new IntArrayEqualityComparer());
+    public HashSet<int[]> emptyArrIntsHashSet = new (new IntArrayEqualityComparer());
 
 
     public GameObject heartLife;
@@ -264,15 +263,15 @@ public class Grid : MonoBehaviour
             int r = Random.Range(1, desertArrIntHashSet.Count);
             if (r < desertArrIntHashSet.Count)
             {
-                heart_position = desertArrIntHashSet.ElementAt(r);
+                heartPosition = desertArrIntHashSet.ElementAt(r);
                 heartLife.transform.gameObject.SetActive(true);
-                heartLife.transform.position = new Vector3(heart_position[0], 0.5f, heart_position[1]);
+                heartLife.transform.position = new Vector3(heartPosition[0], 0.5f, heartPosition[1]);
             }
         }
         else
         {
             heartLife.transform.gameObject.SetActive(false);
-            heart_position = new[] {-1, -1};
+            heartPosition = new[] {-1, -1};
         }
     }
 
@@ -324,10 +323,10 @@ public class Grid : MonoBehaviour
 
     void CheckIfMovementWithHeart(int[] positionDesired)
     {
-        if (positionDesired[0] == heart_position[0] && positionDesired[1] == heart_position[1])
+        if (positionDesired[0] == heartPosition[0] && positionDesired[1] == heartPosition[1])
         {
             heartLife.transform.gameObject.SetActive(false);
-            heart_position = new[] {-1, -1};
+            heartPosition = new[] {-1, -1};
             gameController.IncreaseLive();
             soundManager.PlayHeartPicked();
         }
