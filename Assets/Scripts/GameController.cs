@@ -12,7 +12,6 @@ public class GameController : MonoBehaviour
     private LongestPath _longestPath;
     private Grid _grid;
     private AllCellLevel _allCellLevel;
-    private MaximizeCellLevel _maximizeCellLevel;
 
     public bool drawGizmos;
     private FollowPlayerCamera _cameraController;
@@ -100,9 +99,8 @@ public class GameController : MonoBehaviour
         _cameraController = GameObject.Find("Main Camera").GetComponent<FollowPlayerCamera>();
 
         _allCellLevel = new AllCellLevel(_grid, _longestPath);
-        _maximizeCellLevel = new MaximizeCellLevel(_grid);
 
-        _typeLevels = new List<LevelCell> {_allCellLevel, _maximizeCellLevel};
+        _typeLevels = new List<LevelCell> {_allCellLevel};
         
         // First level will be always a allCellLevel
         _grid.SetEndCondition(_allCellLevel.EndCondition);
