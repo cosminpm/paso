@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using DefaultNamespace.LevelTypes;
 using Unity.VisualScripting;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 public class AllCellLevel : LevelCell
 {   
-    public int downLimiter = 2;
-    public int upLimiter = 7;
+    public int downLimiter = 5;
+    public int upLimiter = 5;
     
     private LongestPath _longestPath;
     private List<int[]> _longestPathListCells;
@@ -32,11 +34,19 @@ public class AllCellLevel : LevelCell
 
     public override void CreateLevelSpecific()
     {
+        // Start measuring time
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
         SetDFSSize();
         _longestPath.InitializeDFS();
         _longestPathListCells = _longestPath.FindLongestPath(grid.startingPosition, grid.poisonArrIntHashSet);
+        Debug.Log("CreateLevelSpecific execution time: " + stopwatch.ElapsedMilliseconds + " ms");
         TransformUnusedDesertIntoPoison(_longestPathListCells);
         grid.CreateFinalCellPosition(_longestPathListCells.Last());
+        stopwatch.Stop();
+        Debug.Log("CreateLevelSpecific execution time: " + stopwatch.ElapsedMilliseconds + " ms");
+
+
     }
     
     private void SetDFSSize()
