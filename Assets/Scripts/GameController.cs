@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    private LongestPath _longestPath;
     private Grid _grid;
     private AllCellLevel _allCellLevel;
 
@@ -93,10 +92,10 @@ public class GameController : MonoBehaviour
         
         _soundManager = GetComponent<SoundManager>();
         _grid = GameObject.Find("Grid").GetComponent<Grid>();
-        _longestPath = GameObject.Find("Grid").GetComponent<LongestPath>();
+        
         _cameraController = GameObject.Find("Main Camera").GetComponent<FollowPlayerCamera>();
 
-        _allCellLevel = new AllCellLevel(_grid, _longestPath);
+        _allCellLevel = new AllCellLevel(_grid);
 
         _typeLevels = new List<LevelCell> {_allCellLevel};
         

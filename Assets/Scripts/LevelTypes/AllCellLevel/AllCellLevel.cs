@@ -2,6 +2,7 @@
 using System.Linq;
 using DefaultNamespace.LevelTypes;
 using Unity.VisualScripting;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class AllCellLevel : LevelCell
@@ -12,9 +13,9 @@ public class AllCellLevel : LevelCell
     private LongestPath _longestPath;
     private List<int[]> _longestPathListCells;
 
-    public AllCellLevel(Grid grid, LongestPath longestPath) : base(grid)
+    public AllCellLevel(Grid grid) : base(grid)
     {
-        _longestPath = longestPath;
+        _longestPath =  GameObject.Find("Grid").GetComponent<LongestPath>();
     }
 
     public override void GridSpecificLevel()
