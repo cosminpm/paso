@@ -14,10 +14,10 @@ public class Grid : MonoBehaviour
     public float scaler = 0.15f;
 
     public GameObject cellPrefab;
-    public List<GameObject> desertGameObjectList;
-    public List<GameObject> poisonDesertGameObjectList;
-    public List<GameObject> forestGameObjectList;
-    public List<GameObject> finalGameObjectList;
+    public List<GameObject> goodCells;
+    public List<GameObject> badCells;
+    public List<GameObject> steppedCells;
+    public List<GameObject> finalCells;
     
     public GameObject emptyGameObject;
 
@@ -108,9 +108,9 @@ public class Grid : MonoBehaviour
     private GameObject GetGameObjectBasedOnCellType(CellType cellType)
     {
         if (cellType == CellType.Desert)
-            return GetRandomFromList(desertGameObjectList);
+            return GetRandomFromList(goodCells);
         if (cellType == CellType.DesertPoison)
-            return GetRandomFromList(poisonDesertGameObjectList);
+            return GetRandomFromList(badCells);
         if (cellType == CellType.Empty)
             return emptyGameObject;
         return null;
@@ -120,16 +120,16 @@ public class Grid : MonoBehaviour
     {
         _dictCellTypeListGameObjects = new Dictionary<CellType, List<GameObject>>
         {
-            {CellType.Desert, desertGameObjectList},
-            {CellType.Forest, forestGameObjectList},
-            {CellType.DesertPoison, poisonDesertGameObjectList},
-            {CellType.Final, finalGameObjectList}
+            {CellType.Desert, goodCells},
+            {CellType.Forest, steppedCells},
+            {CellType.DesertPoison, badCells},
+            {CellType.Final, finalCells}
         };
     }
 
     public void InstantiateGrid()
     {
-        sizeOfCell = GetRandomFromList(desertGameObjectList).transform.GetChild(0).GetComponent<Renderer>().bounds.size;
+        sizeOfCell = GetRandomFromList(goodCells).transform.GetChild(0).GetComponent<Renderer>().bounds.size;
 
         gridCell = new GameObject[rows, columns];
         Transform cube = cellPrefab.transform.Find("Cube");

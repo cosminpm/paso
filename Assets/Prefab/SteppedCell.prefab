@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7348490733008567701}
   m_Layer: 0
-  m_Name: Cell
+  m_Name: SteppedCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,7 +94,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b2a8267132e9e1b4285a906a27ff9cc6, type: 2}
+  - {fileID: 2100000, guid: 70d2323a3319be4449c5ff890b253af6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

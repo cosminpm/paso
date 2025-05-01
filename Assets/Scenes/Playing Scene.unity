@@ -2659,7 +2659,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
   m_Name: 
@@ -8077,7 +8077,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa5ebc9bcbcc4913a70688844a381f1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawGizmos: 0
   playing: 1
 --- !u!4 &1469192985
 Transform:
@@ -9312,32 +9311,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ef10d1b4e7cd744db7e2bebe5bab17f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rows: 3
+  rows: 321
   columns: 3
   limiterPerlinNoise: 0.65
   scaler: 8.4
   cellPrefab: {fileID: 1217813119983272715, guid: 289aaa2f92d44a14eb8d4e3fdb2f4c96,
     type: 3}
-  desertGameObjectList:
-  - {fileID: 1217813119983272715, guid: 8fd993d69701634449facec48662f482, type: 3}
-  - {fileID: 1217813119983272715, guid: 72367bb35eb010e4bbe7947ba0b604e9, type: 3}
-  - {fileID: 1217813119983272715, guid: e5c9b09490b17fb48a9fda50b9a890a7, type: 3}
-  - {fileID: 1217813119983272715, guid: 28b3bb23563455445ad0307d436f6877, type: 3}
-  - {fileID: 1217813119983272715, guid: 5e3ac534588fb364f92c6f9d8799b4ce, type: 3}
-  - {fileID: 1217813119983272715, guid: 3991db1677cf78d45b0be97e6d994cdb, type: 3}
-  - {fileID: 1217813119983272715, guid: aee9d503ebf3d9040afe660d3c466799, type: 3}
-  - {fileID: 1217813119983272715, guid: a5dc866f783fbc845b594cdcb1a01310, type: 3}
-  poisonDesertGameObjectList:
-  - {fileID: 1217813119983272715, guid: cf71c2504af1683408f12370a0f91910, type: 3}
-  forestGameObjectList:
-  - {fileID: 1217813119983272715, guid: 6cbfd1c92efc48846942f9b9590942a4, type: 3}
-  - {fileID: 1217813119983272715, guid: ffaedf81f05d3174099a16560dd2f1d3, type: 3}
-  finalGameObjectList:
+  goodCells:
+  - {fileID: 1217813119983272715, guid: 289aaa2f92d44a14eb8d4e3fdb2f4c96, type: 3}
+  badCells:
+  - {fileID: 1217813119983272715, guid: ad48635b6f3ea07478419877e70511f6, type: 3}
+  steppedCells:
+  - {fileID: 1217813119983272715, guid: fbe5054b2a4d0ae448b91e918070ef02, type: 3}
+  finalCells:
   - {fileID: 1217813119983272715, guid: ceb770b976fcd2f41b56283dc5ec4695, type: 3}
   emptyGameObject: {fileID: 1217813119983272715, guid: 648b61c51f38ee9488d462c74e54ca73,
     type: 3}
   startingPosition: 
-  heart_position: ffffffffffffffff
+  heartPosition: ffffffffffffffff
   heartLife: {fileID: 0}
   soundManager: {fileID: 0}
   gameController: {fileID: 0}
